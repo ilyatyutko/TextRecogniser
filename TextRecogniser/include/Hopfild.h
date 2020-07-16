@@ -20,7 +20,7 @@ private:
 	Assigned answerIfUncorrect;
 	SMatrix recognitionMatrix;
 
-	static const int RecognitionCyclesCount = 20;
+	static const int RecognitionCyclesCount = 50;
 
 	inline static short sigmaFunc(short a)
 	{
@@ -134,7 +134,7 @@ private:
 			auto vec = GetHashOfVector(Vector); //StringEncoder::Huffman(GetHashOfVector(Vector));
 			std::cout << std::endl;
 
-			const int magicConst = 60;
+			const int magicConst = 25;
 			for (int y = 0; y < magicConst; ++y)
 			{
 				for (int x = 0; x < magicConst; ++x)
