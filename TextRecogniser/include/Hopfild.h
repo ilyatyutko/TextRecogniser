@@ -8,7 +8,7 @@
 #include "Encoder.h"
 
 using namespace boost::numeric::ublas;
-using SMatrix = boost::numeric::ublas::matrix<short>;
+using SMatrix = boost::numeric::ublas::matrix<double>;
 using VectorHash = std::string;
 
 template <class Assigned>
@@ -22,7 +22,7 @@ private:
 
 	static const int RecognitionCyclesCount = 50;
 
-	inline static short sigmaFunc(short a)
+	inline static double sigmaFunc(double a)
 	{
 		if (a >= 0)
 			return 1;
@@ -36,7 +36,7 @@ private:
 			answer(i) = sigmaFunc(answer(i));
 		return answer;
 	}
-	inline static void inPlaceSigmaFunc(vector<short>& a)
+	inline static void inPlaceSigmaFunc(vector<double>& a)
 	{
 		for (int i = 0; i < a.size(); ++i)
 			a(i) = sigmaFunc(a(i));
@@ -96,8 +96,11 @@ public:
 				throw std::exception("Input vectors have distinct length");
 			for (int i = 0; i < Size; ++i)
 				tmp(0, i) = (vec.first[i] == true) ? 1 : -1;
-			recognitionMatrix += prod(trans(tmp), tmp) ;
+			recognitionMatrix += ( 1. / std::sqrt(Size)) * prod(trans(tmp), tmp) ;
 		}
+		for (int y = 0; y < Size; ++y)
+			for (int x = 0; x < Size; ++x)
+				recognitionMatrix(y, x) = sigmaFunc(recognitionMatrix(y, x));
 
 		for (int i = 0; i < Size; ++i)
 			recognitionMatrix(i,i) = 0;
@@ -109,7 +112,7 @@ private:
 
 	Assigned recognition(std::vector<bool> vec)
 	{
-		vector<short> Vector(vec.size());
+		vector<double> Vector(vec.size());
 		for (int i = 0; i < vec.size(); ++i)
 			Vector(i) = (vec[i] == true) ? 1 : -1;
 
