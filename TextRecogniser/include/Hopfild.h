@@ -10,7 +10,6 @@
 using namespace boost::numeric::ublas;
 using SMatrix = boost::numeric::ublas::matrix<short>;
 using VectorHash = std::string;
-extern double multiplier;
 
 template <class Assigned>
 class Hopfild
@@ -22,7 +21,6 @@ private:
 	SMatrix recognitionMatrix;
 
 	static const int RecognitionCyclesCount = 50;
-
 
 	inline static short sigmaFunc(short a)
 	{
@@ -96,23 +94,9 @@ public:
 		{
 			if (vec.first.size() != Size)
 				throw std::exception("Input vectors have distinct length");
-
-			int emptyCells = 0;
-			int filledCells = 0;
 			for (int i = 0; i < Size; ++i)
-			{
-				if (vec.first[i])
-				{
-					tmp(0, i) = 1;
-					++filledCells;
-				}
-				else
-				{
-					tmp(0, i) = -1;
-					++emptyCells;
-				}
-			}
-			recognitionMatrix += multiplier * prod(trans(tmp), tmp) * (std::sqrt((double)filledCells / emptyCells));/** ((double)emptyCells / filledCells)*/;
+				tmp(0, i) = (vec.first[i] == true) ? 1 : -1;
+			recognitionMatrix += prod(trans(tmp), tmp) ;
 		}
 
 		for (int i = 0; i < Size; ++i)
@@ -125,24 +109,9 @@ private:
 
 	Assigned recognition(std::vector<bool> vec)
 	{
-		int emptyCells = 0;
-		int filledCells = 0;
 		vector<short> Vector(vec.size());
-
-		auto Size = vec.size();
-		for (int i = 0; i < Size; ++i)
-		{
-			if (vec[i])
-			{
-				Vector(i) = 1;
-				++filledCells;
-			}
-			else
-			{
-				Vector(i) = -1;
-				++emptyCells;
-			}
-		}
+		for (int i = 0; i < vec.size(); ++i)
+			Vector(i) = (vec[i] == true) ? 1 : -1;
 
 
 		bool cycle = true;
@@ -150,8 +119,8 @@ private:
 		while (cycle && (counter--))
 		{
 			cycle = false;
-			auto Copy = std::move(Vector);//////////////////////////////////////////////////////
-			Vector = prod(recognitionMatrix, Vector) * (std::sqrt((double)emptyCells / filledCells));
+			auto Copy = std::move(Vector);
+			Vector = prod(recognitionMatrix, Vector);
 			inPlaceSigmaFunc(Vector);
 			for(int i = 0; i < Vector.size(); ++i)
 				if (Vector(i) != Copy(i))
@@ -163,16 +132,16 @@ private:
 		if (counter)
 		{
 			auto vec = GetHashOfVector(Vector); //StringEncoder::Huffman(GetHashOfVector(Vector));
+			std::cout << std::endl;
 
-			const int magicConstx = 25;
-			const int magicConsty = 25;
-			/*for (int y = 0; y < magicConsty; ++y)
+			const int magicConst = 25;
+			for (int y = 0; y < magicConst; ++y)
 			{
-				for (int x = 0; x < magicConstx; ++x)
-					std::cout << (Vector[magicConstx * y + x] == 1) ? 1 : -1;
-				std::cout << "hopfield" << std::endl;
+				for (int x = 0; x < magicConst; ++x)
+					std::cout << (Vector[magicConst * y + x] == 1) ? 1 : -1;
+				std::cout << std::endl;
 			}
-			std::cout << std::endl;*/
+			std::cout << std::endl;
 			return listOfRemembered[vec];
 		}
 		else
