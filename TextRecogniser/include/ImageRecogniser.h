@@ -102,14 +102,14 @@ public:
 
 		auto vec = picture.SimplifyTo_Binary_Form();
 
-		std::cout << std::endl;
+		/*std::cout << std::endl;
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width; ++x)
 
 				std::cout << (vec[width * y + x] == 1) ? 1 : 0;
 			std::cout << std::endl;
-		}
+		}*/
 		auto answer = NeuralNet.recognition(vec);
 		ilDeleteImages(1, &id);
 		///////////////////////
