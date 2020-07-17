@@ -9,6 +9,12 @@
 #include "Hopfild.h"
 
 using FileName = std::string;
+namespace 
+{
+	const double ContrastFilterPower = 5;
+	const double SharpeningLevel = 700;
+	const ILint SharpeningIterationsCount = 5;
+}
 
 class ImageRecogniser
 {
@@ -17,10 +23,6 @@ private:
 	size_t width = 25;
 	size_t height = 25;
 	size_t depth = 8;
-
-	const double ContrastFilterPower = 5;
-	const double SharpeningLevel = 700;
-	const double SharpeningIterationsCount = 5;
 public:
 	ImageRecogniser(const std::list<std::pair<FileName, std::string>>& FileList)
 	{

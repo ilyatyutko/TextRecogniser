@@ -16,7 +16,7 @@ public:
 	ibitfstream(const char* fname) : std::ifstream(fname, std::ios_base::binary), bitcount(0) {}
 	int getbit() {
 		if (bitcount == 8) bitcount = 0;
-		if (bitcount == 0) buffer = std::ifstream::get();  // get();
+		if (bitcount == 0) buffer = std::ifstream::get();
 		int res;
 		res = (buffer & (1 << (7 - bitcount))) ? 1 : 0;
 		++bitcount;
@@ -32,14 +32,18 @@ class obitfstream : public std::ofstream {
 	unsigned char buffer, bitcount;
 public:
 	obitfstream() : buffer(0), bitcount(0) {}
-	obitfstream(const char* fname) : std::ofstream(fname, std::ios_base::binary), bitcount(0), buffer(0) {}
+	obitfstream(const char* fname) 
+		: std::ofstream(fname, std::ios_base::binary)
+		, bitcount(0)
+		, buffer(0) {}
 	void putBit(bool x) {
 		unsigned char ch = x;
-		buffer = buffer | (ch << (7 - bitcount)); // buffer |= ( ch << (7-bitcount));
+		buffer |= (ch << (7 - bitcount));
 		++bitcount;
 		if (bitcount == 8) {
-			put(buffer); // std::ofstream::put();
-			bitcount = 0; buffer = 0;
+			put(buffer);
+			bitcount = 0;
+			buffer = 0;
 		}
 	}
 	void close() {
@@ -68,7 +72,8 @@ public:
 	}
 	void close() {
 		if (bitcount > 0) str += buffer;
-		bitcount = 0; buffer = 0;
+		bitcount = 0;
+		buffer = 0;
 	}
 };
 
@@ -85,12 +90,12 @@ public:
 	int symbol;
 	unsigned long long frequency;
 	const Node* left;
-	Node* Left()
+	const Node* right;
+	inline Node* Left() const
 	{
 		return const_cast<Node*>(left);
 	}
-	const Node* right;
-	Node* Right()
+	inline Node* Right() const
 	{
 		return const_cast<Node*>(right);
 	}
@@ -146,7 +151,7 @@ public:
 		return *this;
 	}
 
-	Node CreateRoot(Node& Top)
+	inline Node CreateRoot(Node const& Top)
 	{
 		Node a;
 		a.left = &Top;
@@ -198,9 +203,7 @@ protected:
 			auto i = toGo.top();
 			toGo.pop();
 			if (i.first->left == nullptr && i.first->right == nullptr)
-			{
 				result.insert(std::make_pair(i.first->symbol, i.second));
-			}
 			else
 			{
 				if (i.first->left != nullptr)

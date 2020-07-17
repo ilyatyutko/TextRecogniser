@@ -59,9 +59,9 @@ public:
 				G_sum += tmp.G;
 				B_sum += tmp.B;
 			}
-		return Pixel(std::round(R_sum / ((unsigned long long)height * width)),
-					 std::round(G_sum / ((unsigned long long)height * width)),
-					 std::round(B_sum / ((unsigned long long)height * width)));
+		return Pixel(std::floor(R_sum / ((unsigned long long)height * width)),
+					 std::floor(G_sum / ((unsigned long long)height * width)),
+					 std::floor(B_sum / ((unsigned long long)height * width)));
 	}
 	void SimplifyTo_Black_And_White_Form()
 	{
