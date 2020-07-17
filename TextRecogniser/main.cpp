@@ -1,11 +1,9 @@
-#include "include/NumberRecogniser.h"
 #include <bitset>
-
-extern double multiplier = 1.3;
+#include "include/NumberRecogniser.h"
 
 int main()
 {
-
+	std::cout << NumberRecogniser::RecogniseNumber(std::string("SampleImages/1.png"));
 //std::cout << "1: " << q.RecognizeImage(std::string("SampleImages/1.png")) << std::endl;
 //std::cout << "2: " << q.RecognizeImage(std::string("SampleImages/2.png")) << std::endl;
 //std::cout << "3: " << q.RecognizeImage(std::string("SampleImages/3.png")) << std::endl;
@@ -28,6 +26,5 @@ int main()
 //std::cout << "8: " << q.RecognizeImage(std::string("SampleImages/sample8.png")) << std::endl;
 //std::cout << "9: " << q.RecognizeImage(std::string("SampleImages/sample9.png")) << std::endl;
 //std::cout << "0: " << q.RecognizeImage(std::string("SampleImages/sample0.png"));
-
 	return 0;
 }

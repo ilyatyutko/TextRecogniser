@@ -149,14 +149,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NumberRecogniser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Encoder.h" />
     <ClInclude Include="include\Hopfild.h" />
     <ClInclude Include="include\ImageRecogniser.h" />
     <ClInclude Include="include\ImageTransformer.h" />
-    <ClInclude Include="NumberRecogniser.h" />
+    <ClInclude Include="include\NumberRecogniser.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="GoodRecognising.txt" />
