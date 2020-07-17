@@ -16,7 +16,7 @@ namespace
 
 		inline volume brightness() const
 		{
-			return std::round((double)(R + G + B) / 3 * T / 256);
+			return std::round(((double)R + (double)G + (double)B) / 3 * (double)T / 256);
 		}
 
 		Pixel(volume R_set, volume G_set, volume B_set)
@@ -70,7 +70,7 @@ public:
 			for (int x = 0; x < width; ++x)
 			{
 				if (this->at(y, x).brightness() > AverageBrightness)
-					this->at(y, x) =  White;
+					this->at(y, x) = White;
 				else
 					this->at(y, x) = Black;
 			}
@@ -91,16 +91,6 @@ public:
 			}
 		return result;
 	}
-	void JustCoolFilter(volume FilterPower)
-	{
-		volume AverageBrightness = averageColour().brightness();
-		for (int y = 0; y < height; ++y)
-			for (int x = 0; x < width; ++x)
-				this->at(y, x) = Pixel(   (y % 256) * FilterPower / 256   * this->at(y, x).R % 256
-										, (x % 256) * FilterPower / 256   * this->at(y, x).G % 256
-										,((y + x) % 256) * FilterPower / 256 * this->at(y, x).R % 256);
-	}
-
 	ImageTransformer(unsigned char* data_set, size_t height_set, size_t width_set)
 		:data(reinterpret_cast<Pixel*>(data_set))
 		, height(height_set)

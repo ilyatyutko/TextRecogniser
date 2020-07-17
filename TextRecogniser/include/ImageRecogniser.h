@@ -22,7 +22,7 @@ private:
 	const double SharpeningLevel = 700;
 	const double SharpeningIterationsCount = 5;
 public:
-	ImageRecogniser(std::list<std::pair<FileName, std::string>> FileList)
+	ImageRecogniser(const std::list<std::pair<FileName, std::string>>& FileList)
 	{
 		ilInit();
 		iluInit();
@@ -32,14 +32,11 @@ public:
 
 		std::list<std::pair<std::vector<bool>, std::string>> Images;
 
-		bool firstImage = true;
 		for (auto& file : FileList)
 		{
 			ILuint	id;
 			ilGenImages(1, &id);
 			ilBindImage(id);
-
-			auto fileNm = file.first.c_str();
 			ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(file.first.c_str())));
 
 			bool ImageLoadException = ilGetError();
@@ -50,34 +47,18 @@ public:
 			iluSharpen(SharpeningLevel, SharpeningIterationsCount);
 			iluScale(width, height, 2);
 
-			int height = ilGetInteger(IL_IMAGE_HEIGHT);
-			int width = ilGetInteger(IL_IMAGE_WIDTH);
-
 			ImageTransformer picture(ilGetData()
 									,height
 									,width);
-			picture.SimplifyTo_Black_And_White_Form();
-
-			auto vec = picture.SimplifyTo_Binary_Form();
-				//for (int y = 0; y < height; ++y)
-				//{
-				//	for (int x = 0; x < width; ++x)
-
-				//		std::cout << vec[width * y + x];
-				//	std::cout << std::endl;
-				//}
-				//std::cout << std::endl;
 			Images.push_back( 
 				std::make_pair(picture.SimplifyTo_Binary_Form()
 							   , file.second));
-			
 			ilDeleteImages(1, &id);
 		}
-
 		NeuralNet = Hopfild<std::string>(Images);
 	}
 
-	std::string RecognizeImage(FileName file)
+	std::string RecognizeImage(const FileName& file)
 	{
 		ILuint	id;
 		ilGenImages(1, &id);
@@ -87,32 +68,17 @@ public:
 		bool ImageLoadException = ilGetError();
 		if (ImageLoadException)
 			throw std::exception("Image Cant be Loaded");
-		//if (width != ilGetInteger(IL_IMAGE_WIDTH)
-		//	|| height != ilGetInteger(IL_IMAGE_HEIGHT))
 
-		
 		iluContrast(ContrastFilterPower);
 		iluSharpen(SharpeningLevel, SharpeningIterationsCount);
 		iluScale(width, height, 8);
 
 		ImageTransformer picture(ilGetData()
-			, ilGetInteger(IL_IMAGE_HEIGHT)
-			, ilGetInteger(IL_IMAGE_WIDTH));
-		picture.SimplifyTo_Black_And_White_Form();
+			, height
+			, width);
 
-		auto vec = picture.SimplifyTo_Binary_Form();
-
-		/*std::cout << std::endl;
-		for (int y = 0; y < height; ++y)
-		{
-			for (int x = 0; x < width; ++x)
-
-				std::cout << (vec[width * y + x] == 1) ? 1 : 0;
-			std::cout << std::endl;
-		}*/
-		auto answer = NeuralNet.recognition(vec);
+		auto answer = NeuralNet.recognition(picture.SimplifyTo_Binary_Form());
 		ilDeleteImages(1, &id);
-		///////////////////////
 		return answer;
 	}
 };

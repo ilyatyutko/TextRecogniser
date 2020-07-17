@@ -3,7 +3,6 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <unordered_map>
 #include <vector>
-#include <cassert>
 
 #include "Encoder.h"
 
@@ -11,46 +10,22 @@ using namespace boost::numeric::ublas;
 using SMatrix = boost::numeric::ublas::matrix<double>;
 using VectorHash = std::string;
 
-template <class Assigned>
-class Hopfild
+namespace 
 {
-private:
-	unsigned int matrixSize;
-	std::unordered_map<VectorHash, Assigned> listOfRemembered;
-	Assigned answerIfUncorrect;
-	SMatrix recognitionMatrix;
-
-	static const int RecognitionCyclesCount = 10;
-
-	inline static short sigmaFunc(short a)
+	inline double sigmaFunc(double a)
 	{
-		if (a >= 0)
-			return 1;
+		if (a >= 0.)
+			return 1.;
 		else
-			return -1;
+			return -1.;
 	}
-	inline static vector<short> sigmaFunc(const vector<short>&a)
-	{
-		auto answer = a;
-		for (int i = 0; i < answer.size(); ++i)
-			answer(i) = sigmaFunc(answer(i));
-		return answer;
-	}
-	inline static void inPlaceSigmaFunc(vector<short>& a)
+	inline void inPlaceSigmaFunc(vector<double>& a)
 	{
 		for (int i = 0; i < a.size(); ++i)
 			a(i) = sigmaFunc(a(i));
 		return;
 	}
-
-	inline static vector<short> stdVecToUblasVec(std::vector<bool> input)
-	{
-		vector<short> answer(input.size());
-		for (int i = 0; i < input.size(); ++i)
-			answer(i) = (input[i] == true) ? 1 : -1;
-		return answer;
-	}
-	inline static VectorHash GetHashOfVector(std::vector<bool> input)
+	inline VectorHash GetHashOfVector(const std::vector<bool>& input)
 	{
 		VectorHash answer = "";
 		answer.reserve(input.size());
@@ -58,7 +33,7 @@ private:
 			answer += (input[i] == true) ? '1' : '0';
 		return answer;
 	}
-	inline static VectorHash GetHashOfVector(vector<short> input)
+	inline VectorHash GetHashOfVector(const vector<double>& input)
 	{
 		VectorHash answer = "";
 		answer.reserve(input.size());
@@ -66,41 +41,50 @@ private:
 			answer += input[i] == 1 ? '1' : '0';
 		return answer;
 	}
-public:
-	Hopfild(const std::list<std::pair<std::vector<bool>, Assigned>> &InputListForRecognition
-			, Assigned inputAnswerIfUncorrect = Assigned())
-	{
-		if (InputListForRecognition.size() == 0)
-			throw std::exception("Empty List For Remembering");
+}
 
-		answerIfUncorrect = inputAnswerIfUncorrect;
-		int Size = InputListForRecognition.begin()->first.size();
+template <class Assigned>
+class Hopfild
+{
+private:
+	unsigned int matrixSize;
+	std::unordered_map<VectorHash, Assigned> listOfRemembered;
+	Assigned answerIfUncorrect = Assigned();
+	SMatrix recognitionMatrix;
+
+	static const int RecognitionCyclesCount = 10;
+public:
+	Hopfild(const std::list<std::pair<std::vector<bool>, Assigned>>& InputListForRecognition
+		, Assigned inputAnswerIfUncorrect = Assigned())
+		:matrixSize(InputListForRecognition.begin()->first.size())
+		,answerIfUncorrect(inputAnswerIfUncorrect)
+	{
+		if (matrixSize == 0)
+			throw std::exception("Empty List For Remembering");
 		for (auto& i : InputListForRecognition)
 			listOfRemembered.insert(
 				std::make_pair(
-					//StringEncoder::Huffman(GetHashOfVector(i.first))
-					GetHashOfVector(i.first)
+					StringEncoder::Huffman(GetHashOfVector(i.first))
 					,i.second
 				));
 
-		matrixSize = Size;
-		recognitionMatrix = SMatrix(Size, Size);
-		for (int i = 0; i < Size; ++i)
-			for (int j = 0; j < Size; ++j)
-				recognitionMatrix(i, j) = 0;
+		recognitionMatrix = SMatrix(matrixSize, matrixSize);
+		for (int i = 0; i < matrixSize; ++i)
+			for (int j = 0; j < matrixSize; ++j)
+				recognitionMatrix(i, j) = 0.;
 
-		SMatrix tmp(1, Size);
+		SMatrix tmp(1, matrixSize);
 		for (auto &vec : InputListForRecognition)
 		{
-			if (vec.first.size() != Size)
+			if (vec.first.size() != matrixSize)
 				throw std::exception("Input vectors have distinct length");
-			for (int i = 0; i < Size; ++i)
-				tmp(0, i) = (vec.first[i] == true) ? 1 : -1;
+			for (int i = 0; i < matrixSize; ++i)
+				tmp(0, i) = (vec.first[i] == true) ? 1. : -1.;
 			recognitionMatrix += prod(trans(tmp), tmp) / (double)InputListForRecognition.size();
 		}
 
-		for (int i = 0; i < Size; ++i)
-			recognitionMatrix(i,i) = 0;
+		for (int i = 0; i < matrixSize; ++i)
+			recognitionMatrix(i,i) = 0.;
 	}
 private:
 	Hopfild()
@@ -109,41 +93,29 @@ private:
 
 	Assigned recognition(std::vector<bool> vec)
 	{
-		vector<short> Vector(vec.size());
+		vector<double> Vector(vec.size());
 		for (int i = 0; i < vec.size(); ++i)
-			Vector(i) = (vec[i] == true) ? 1 : -1;
+			Vector(i) = (vec[i] == true) ? 1. : -1.;
 
+		bool unstableCondition = true;
+		int convertingCounter = RecognitionCyclesCount;
+		auto previousVectorCondition = std::move(Vector);
 
-		bool cycle = true;
-		int counter = RecognitionCyclesCount;
-		while (cycle && (counter--))
+		while (unstableCondition && (convertingCounter--))
 		{
-			cycle = false;
-			auto Copy = std::move(Vector);
-			Vector = prod(recognitionMatrix, Vector);
+			unstableCondition = false;
+			previousVectorCondition = std::move(Vector);
+			Vector = prod(recognitionMatrix, previousVectorCondition);
 			inPlaceSigmaFunc(Vector);
-			for(int i = 0; i < Vector.size(); ++i)
-				if (Vector(i) != Copy(i))
+			for (int i = 0; i < Vector.size(); ++i)
+				if (Vector(i) != previousVectorCondition(i))
 				{
-					cycle = true;
+					unstableCondition = true;
 					break;
 				}
 		}
-		if (counter)
-		{
-			auto vec = GetHashOfVector(Vector); //StringEncoder::Huffman(GetHashOfVector(Vector));
-			/*std::cout << std::endl;
-
-			const int magicConst = 30;
-			for (int y = 0; y < magicConst; ++y)
-			{
-				for (int x = 0; x < magicConst; ++x)
-					std::cout << (Vector[magicConst * y + x] == 1) ? 1 : -1;
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;*/
-			return listOfRemembered[vec];
-		}
+		if (convertingCounter)
+			return listOfRemembered[StringEncoder::Huffman(GetHashOfVector(Vector))];
 		else
 			return answerIfUncorrect;
 	}
