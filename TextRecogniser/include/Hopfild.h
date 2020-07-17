@@ -8,7 +8,7 @@
 #include "Encoder.h"
 
 using namespace boost::numeric::ublas;
-using SMatrix = boost::numeric::ublas::matrix<short>;
+using SMatrix = boost::numeric::ublas::matrix<double>;
 using VectorHash = std::string;
 
 template <class Assigned>
@@ -20,7 +20,7 @@ private:
 	Assigned answerIfUncorrect;
 	SMatrix recognitionMatrix;
 
-	static const int RecognitionCyclesCount = 50;
+	static const int RecognitionCyclesCount = 10;
 
 	inline static short sigmaFunc(short a)
 	{
@@ -96,7 +96,7 @@ public:
 				throw std::exception("Input vectors have distinct length");
 			for (int i = 0; i < Size; ++i)
 				tmp(0, i) = (vec.first[i] == true) ? 1 : -1;
-			recognitionMatrix += prod(trans(tmp), tmp) ;
+			recognitionMatrix += prod(trans(tmp), tmp) / (double)InputListForRecognition.size();
 		}
 
 		for (int i = 0; i < Size; ++i)
@@ -132,16 +132,16 @@ private:
 		if (counter)
 		{
 			auto vec = GetHashOfVector(Vector); //StringEncoder::Huffman(GetHashOfVector(Vector));
-			std::cout << std::endl;
+			/*std::cout << std::endl;
 
-			const int magicConst = 25;
+			const int magicConst = 30;
 			for (int y = 0; y < magicConst; ++y)
 			{
 				for (int x = 0; x < magicConst; ++x)
 					std::cout << (Vector[magicConst * y + x] == 1) ? 1 : -1;
 				std::cout << std::endl;
 			}
-			std::cout << std::endl;
+			std::cout << std::endl;*/
 			return listOfRemembered[vec];
 		}
 		else
