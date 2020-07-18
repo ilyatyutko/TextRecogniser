@@ -10,10 +10,6 @@
 #include "Settings.h"
 
 using FileName = std::string;
-namespace 
-{
-	
-}
 
 class ImageRecogniser
 {
@@ -42,12 +38,9 @@ public:
 	{
 		return NeuralNet.recognition(BinaryImage.SimplifyTo_Binary_Form());
 	}
-	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
+	void RecognizeImage(const ImageTransformer& BinaryImage, int& recordPlace) const
 	{
-		if (VectorizedImage.size() != 
-			Settings::ImageRecognitionWidth *  Settings::ImageRecognitionHeight)
-			throw std::exception("input VectorImage has wrong size");
-			return NeuralNet.recognition(VectorizedImage);
+		recordPlace = NeuralNet.recognition(BinaryImage.SimplifyTo_Binary_Form());
 	}
 };
 
