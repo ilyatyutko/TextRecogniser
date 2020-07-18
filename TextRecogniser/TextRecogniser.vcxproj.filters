@@ -32,7 +32,10 @@
     <ClInclude Include="include\ImageTransformer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\NumberRecogniser.h">
+    <ClInclude Include="include\Settings.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DigitRecogniser.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

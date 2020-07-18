@@ -1,8 +1,10 @@
 #pragma once
 #include <cmath>
 #include <vector>
-#include <iostream>
-#include <iomanip>
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+#include "Settings.h"
 
 using volume = unsigned char;
 namespace
@@ -36,12 +38,11 @@ namespace
 class ImageTransformer
 {
 public:
-	size_t width;
-	size_t height;
+	ILuint ID;
 	Pixel* data;
 	inline Pixel& at(size_t y, size_t x) const
 	{
-		return *(data + y * width + x);
+		return *(data + y * Settings::ImageRecognitionWidth + x);
 	}
 	Pixel averageColour() const
 	{
@@ -51,23 +52,23 @@ public:
 
 		Pixel tmp;
 
-		for(int y = 0; y < height; ++y)
-			for (int x = 0; x < width; ++x)
+		for(int y = 0; y < Settings::ImageRecognitionHeight; ++y)
+			for (int x = 0; x < Settings::ImageRecognitionWidth; ++x)
 			{
 				tmp = this->at(y,x);
 				R_sum += tmp.R;
 				G_sum += tmp.G;
 				B_sum += tmp.B;
 			}
-		return Pixel(std::floor(R_sum / ((unsigned long long)height * width)),
-					 std::floor(G_sum / ((unsigned long long)height * width)),
-					 std::floor(B_sum / ((unsigned long long)height * width)));
+		return Pixel(std::floor(R_sum / ((unsigned long long)Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth)),
+					 std::floor(G_sum / ((unsigned long long)Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth)),
+					 std::floor(B_sum / ((unsigned long long)Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth)));
 	}
 	void SimplifyTo_Black_And_White_Form()
 	{
 		volume AverageBrightness = averageColour().brightness();
-		for (int y = 0; y < height; ++y)
-			for (int x = 0; x < width; ++x)
+		for (int y = 0; y < Settings::ImageRecognitionHeight; ++y)
+			for (int x = 0; x < Settings::ImageRecognitionWidth; ++x)
 			{
 				if (this->at(y, x).brightness() > AverageBrightness)
 					this->at(y, x) = White;
@@ -78,11 +79,11 @@ public:
 	std::vector<bool> SimplifyTo_Binary_Form() const
 	{
 		std::vector<bool> result;
-		result.reserve(height * width);
+		result.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
 
 		volume AverageBrightness = averageColour().brightness();
-		for (int y = 0; y < height; ++y)
-			for (int x = 0; x < width; ++x)
+		for (int y = 0; y < Settings::ImageRecognitionHeight; ++y)
+			for (int x = 0; x < Settings::ImageRecognitionWidth; ++x)
 			{
 				if (this->at(y, x).brightness() > AverageBrightness)
 					result.push_back(false);
@@ -91,11 +92,31 @@ public:
 			}
 		return result;
 	}
-	ImageTransformer(unsigned char* data_set, size_t height_set, size_t width_set)
-		:data(reinterpret_cast<Pixel*>(data_set))
-		, height(height_set)
-		, width(width_set)
-	{}
+	ImageTransformer(const std::string& FileName)
+	{
+		ilInit();
+		iluInit();
+
+		ILuint	id;
+		ilGenImages(1, &id);
+		ilBindImage(id);
+		ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(FileName.c_str())));
+
+		bool ImageLoadException = ilGetError();
+		if (ImageLoadException)
+			throw std::exception("Image Cant be Loaded");
+
+		iluContrast(Settings::ContrastFilterPower);
+		iluSharpen(Settings::SharpeningLevel, Settings::SharpeningIterationsCount);
+		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 8);
+
+		ID = id;
+		data =  reinterpret_cast<Pixel*>(ilGetData());
+	}
 	ImageTransformer() = delete;
+	~ImageTransformer()
+	{
+		ilDeleteImages(1, &ID);
+	}
 };
 

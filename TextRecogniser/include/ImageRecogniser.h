@@ -7,81 +7,47 @@
 #include <iostream>
 #include "ImageTransformer.h"
 #include "Hopfild.h"
+#include "Settings.h"
 
 using FileName = std::string;
 namespace 
 {
-	const double ContrastFilterPower = 5;
-	const double SharpeningLevel = 700;
-	const ILint SharpeningIterationsCount = 5;
+	
 }
 
 class ImageRecogniser
 {
 private:
-	Hopfild<std::string> NeuralNet;
-	size_t width = 25;
-	size_t height = 25;
-	size_t depth = 8;
+	Hopfild<int> NeuralNet;
 public:
-	ImageRecogniser(const std::list<std::pair<FileName, std::string>>& FileList)
+	ImageRecogniser(const std::list<std::pair<FileName, int>>& FileList)
 	{
-		ilInit();
-		iluInit();
-
 		if (FileList.size() == 0)
 			throw std::exception("Empty Input List");
 
-		std::list<std::pair<std::vector<bool>, std::string>> Images;
+		std::list<std::pair<std::vector<bool>, int>> Images;
 
 		for (auto& file : FileList)
 		{
-			ILuint	id;
-			ilGenImages(1, &id);
-			ilBindImage(id);
-			ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(file.first.c_str())));
-
-			bool ImageLoadException = ilGetError();
-			if (ImageLoadException)
-				throw std::exception("Image Cant be Loaded");
-			
-			iluContrast(ContrastFilterPower);
-			iluSharpen(SharpeningLevel, SharpeningIterationsCount);
-			iluScale(width, height, 2);
-
-			ImageTransformer picture(ilGetData()
-									,height
-									,width);
+			ImageTransformer picture(file.first);
 			Images.push_back( 
 				std::make_pair(picture.SimplifyTo_Binary_Form()
 							   , file.second));
-			ilDeleteImages(1, &id);
 		}
-		NeuralNet = Hopfild<std::string>(Images);
+
+		//there 10 is element, which means impossibility to recognise
+		NeuralNet = Hopfild<int>(Images, 10); 
 	}
-
-	std::string RecognizeImage(const FileName& file)
+	int RecognizeImage(const ImageTransformer& BinaryImage) const
 	{
-		ILuint	id;
-		ilGenImages(1, &id);
-		ilBindImage(id);
-		ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(file.c_str())));
-
-		bool ImageLoadException = ilGetError();
-		if (ImageLoadException)
-			throw std::exception("Image Cant be Loaded");
-
-		iluContrast(ContrastFilterPower);
-		iluSharpen(SharpeningLevel, SharpeningIterationsCount);
-		iluScale(width, height, 8);
-
-		ImageTransformer picture(ilGetData()
-			, height
-			, width);
-
-		auto answer = NeuralNet.recognition(picture.SimplifyTo_Binary_Form());
-		ilDeleteImages(1, &id);
-		return answer;
+		return NeuralNet.recognition(BinaryImage.SimplifyTo_Binary_Form());
+	}
+	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
+	{
+		if (VectorizedImage.size() != 
+			Settings::ImageRecognitionWidth *  Settings::ImageRecognitionHeight)
+			throw std::exception("input VectorImage has wrong size");
+			return NeuralNet.recognition(VectorizedImage);
 	}
 };
 

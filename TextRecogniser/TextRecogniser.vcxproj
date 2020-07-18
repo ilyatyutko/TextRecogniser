@@ -155,7 +155,8 @@
     <ClInclude Include="include\Hopfild.h" />
     <ClInclude Include="include\ImageRecogniser.h" />
     <ClInclude Include="include\ImageTransformer.h" />
-    <ClInclude Include="include\NumberRecogniser.h" />
+    <ClInclude Include="include\DigitRecogniser.h" />
+    <ClInclude Include="include\Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="GoodRecognising.txt" />

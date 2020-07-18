@@ -91,7 +91,7 @@ private:
 	{}
 	friend class ImageRecogniser;
 
-	Assigned recognition(std::vector<bool> vec)
+	Assigned recognition(std::vector<bool> vec) const
 	{
 		vector<double> Vector(vec.size());
 		for (int i = 0; i < vec.size(); ++i)
@@ -115,7 +115,13 @@ private:
 				}
 		}
 		if (convertingCounter)
-			return listOfRemembered[StringEncoder::Huffman(GetHashOfVector(Vector))];
+		{
+			auto iter = listOfRemembered.find(StringEncoder::Huffman(GetHashOfVector(Vector)));
+			if (iter != listOfRemembered.end())
+				return iter->second;
+			else
+				return answerIfUncorrect;
+		}
 		else
 			return answerIfUncorrect;
 	}
