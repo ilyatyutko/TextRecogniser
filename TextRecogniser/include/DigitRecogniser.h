@@ -5,19 +5,12 @@
 static class DigitRecogniser
 {
 public:
-	static ImageTransformer Image;
-
 	static int RecogniseDigit(const std::string& FileName)
 	{
 		if (!RecognisersAreInitialized)
-		{
 			Initialization();
-			Image = ImageTransformer(FileName);
-		}
-		else
-			Image.ChangeImage(FileName);
 
-		
+		ImageTransformer Image(FileName);
 
 		unsigned char NumberRate[11];
 		NumberRate[0] = NumberRate[1] = NumberRate[2]
@@ -31,6 +24,7 @@ public:
 		for (int i = 0; i < 10; ++i)
 			if (NumberRate[i] > NumberRate[index])
 				index = i;
+
 		return index;
 	}
 	static int RecogniseDigit(const ImageTransformer& Image)
@@ -112,4 +106,4 @@ private:
 
 bool DigitRecogniser::RecognisersAreInitialized = false;
 std::vector<ImageRecogniser> DigitRecogniser::Recognisers = std::vector<ImageRecogniser>();
-ImageTransformer DigitRecogniser::Image = ImageTransformer();
+

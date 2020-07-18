@@ -40,7 +40,6 @@ class ImageTransformer
 public:
 	ILuint ID;
 	Pixel* data;
-
 	inline Pixel& at(size_t y, size_t x) const
 	{
 		return *(data + y * Settings::ImageRecognitionWidth + x);
@@ -77,7 +76,7 @@ public:
 					this->at(y, x) = Black;
 			}
 	}
-	std::vector<bool> GetBinaryForm() const
+	std::vector<bool> SimplifyTo_Binary_Form() const
 	{
 		std::vector<bool> result;
 		result.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
@@ -93,25 +92,13 @@ public:
 			}
 		return result;
 	}
-	void ChangeImage(const std::string& FileName)
-	{
-		ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(FileName.c_str())));
-
-		bool ImageLoadException = ilGetError();
-		if (ImageLoadException)
-			throw std::exception("Image Cant be Loaded");
-
-		iluContrast(Settings::ContrastFilterPower);
-		iluSharpen(Settings::SharpeningLevel, Settings::SharpeningIterationsCount);
-		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 8);
-
-		data = reinterpret_cast<Pixel*>(ilGetData());
-	}
 	ImageTransformer(const std::string& FileName)
 	{
 		ilInit();
 		iluInit();
-		ILuint	id =  iluGenImage();
+
+		ILuint	id;
+		ilGenImages(1, &id);
 		ilBindImage(id);
 		ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(FileName.c_str())));
 
@@ -126,15 +113,10 @@ public:
 		ID = id;
 		data =  reinterpret_cast<Pixel*>(ilGetData());
 	}
-	ImageTransformer()
-	{
-		ilInit();
-		iluInit();
-		data = nullptr;
-	}
+	ImageTransformer() = delete;
 	~ImageTransformer()
 	{
-		iluDeleteImage(ID);
+		ilDeleteImages(1, &ID);
 	}
 };
 
