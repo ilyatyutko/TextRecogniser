@@ -19,12 +19,12 @@ namespace
 class ImageRecogniser
 {
 private:
-	Hopfild<char> NeuralNet;
+	Hopfild<std::string> NeuralNet;
 	size_t width = 25;
 	size_t height = 25;
 	size_t depth = 8;
 public:
-	ImageRecogniser(const std::list<std::pair<FileName, char>>& FileList)
+	ImageRecogniser(const std::list<std::pair<FileName, std::string>>& FileList)
 	{
 		ilInit();
 		iluInit();
@@ -32,7 +32,7 @@ public:
 		if (FileList.size() == 0)
 			throw std::exception("Empty Input List");
 
-		std::list<std::pair<std::vector<bool>, char>> Images;
+		std::list<std::pair<std::vector<bool>, std::string>> Images;
 
 		for (auto& file : FileList)
 		{
@@ -57,10 +57,10 @@ public:
 							   , file.second));
 			ilDeleteImages(1, &id);
 		}
-		NeuralNet = Hopfild<char>(Images);
+		NeuralNet = Hopfild<std::string>(Images);
 	}
 
-	char RecognizeImage(const FileName& file)
+	std::string RecognizeImage(const FileName& file)
 	{
 		ILuint	id;
 		ilGenImages(1, &id);

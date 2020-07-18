@@ -26,14 +26,14 @@ private:
 			return;
 		 
 		RecognisersAreInitialized = true;
-		std::list<std::pair<std::string, char>> a;
+		std::list<std::pair<std::string, std::string>> a;
 
 		Recognisers.reserve(6);
 
-		a.push_back(std::make_pair("SampleImages/3.png", '3'));
-		a.push_back(std::make_pair("SampleImages/4.png", '4'));
-		a.push_back(std::make_pair("SampleImages/7.png", '7'));
-		a.push_back(std::make_pair("SampleImages/0.png", '0'));
+		a.push_back(std::make_pair("SampleImages/3.png", "3"));
+		a.push_back(std::make_pair("SampleImages/4.png", "4"));
+		a.push_back(std::make_pair("SampleImages/7.png", "7"));
+		a.push_back(std::make_pair("SampleImages/0.png", "0"));
 		Recognisers.push_back(ImageRecogniser(a));
 
 		a.clear();
