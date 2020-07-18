@@ -1,13 +1,6 @@
 #pragma once
 #include <string>
-#include <thread>
-#include <functional>
 #include "ImageRecogniser.h"
-
-void ImageRecogniserCallWRAPPER(const ImageRecogniser& Obj, const ImageTransformer& BinaryImage, int& recordPlace)
-{
-	Obj.RecognizeImage(BinaryImage, recordPlace);
-}
 
 static class DigitRecogniser
 {
@@ -19,46 +12,13 @@ public:
 
 		ImageTransformer Image(FileName);
 
-		int RecognisingResults[6];
-
-		auto ptr0 
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[0], Image, RecognisingResults[0]);
-		auto ptr1
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[1], Image, RecognisingResults[1]);
-		auto ptr2
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[2], Image, RecognisingResults[2]);
-		auto ptr3
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[3], Image, RecognisingResults[3]);
-		auto ptr4
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[4], Image, RecognisingResults[4]);
-		auto ptr5
-			= std::bind(ImageRecogniserCallWRAPPER, Recognisers[5], Image, RecognisingResults[5]);
-		std::thread r0(ptr0);
-		std::thread r1(ptr1);
-		std::thread r2(ptr2);
-		std::thread r3(ptr3);
-		std::thread r4(ptr4);
-		std::thread r5(ptr5);
-		if (r0.joinable())
-			r0.join();
-		if (r1.joinable())
-			r1.join();
-		if (r2.joinable())
-			r2.join();
-		if (r3.joinable())
-			r3.join();
-		if (r4.joinable())
-			r4.join();
-		if (r5.joinable())
-			r5.join();
-
 		unsigned char NumberRate[11];
 		NumberRate[0] = NumberRate[1] = NumberRate[2]
 			= NumberRate[3] = NumberRate[4] = NumberRate[5]
-			= NumberRate[6] = NumberRate[7] = NumberRate[8]
+			= NumberRate[6] = NumberRate[7] = NumberRate[8] 
 			= NumberRate[9] = 0;
 		for (int i = 0; i < 6; ++i)
-			++NumberRate[RecognisingResults[i]];
+			++NumberRate[Recognisers[i].RecognizeImage(Image)];
 
 		int index = 0;
 		for (int i = 0; i < 10; ++i)
