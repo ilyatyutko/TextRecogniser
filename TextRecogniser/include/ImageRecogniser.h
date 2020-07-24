@@ -31,7 +31,7 @@ public:
 		{
 			ImageTransformer picture(file.first);
 			Images.push_back( 
-				std::make_pair(picture.SimplifyTo_Binary_Form()
+				std::make_pair(picture.Get_Binary_Form()
 							   , file.second));
 		}
 
@@ -40,7 +40,7 @@ public:
 	}
 	int RecognizeImage(const ImageTransformer& BinaryImage) const
 	{
-		return NeuralNet.recognition(BinaryImage.SimplifyTo_Binary_Form());
+		return NeuralNet.recognition(BinaryImage.Get_Binary_Form());
 	}
 	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
 	{

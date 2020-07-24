@@ -1,11 +1,28 @@
 #include <bitset>
 #include <iostream>
 #include <ctime>
-#include "include/DigitRecogniser.h"
+//#include "include/DigitRecogniser.h"
+#include <IL/il.h>
+#include "include/Filter.h"
 
 int main()
 {
-	unsigned long long begin = clock();
+	ILuint id;
+	ilInit();
+	ilGenImages(1, &id);
+	ilBindImage(id);
+	ilLoad(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>("SampleImages/Filter_Sample.png")));
+
+	bool err = ilGetError();
+	auto wqe = ilGetInteger(IL_IMAGE_BITS_PER_PIXEL);
+	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
+	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
+	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
+	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
+	Filter::TransformToBlackAndWhiteForm(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
+	ilSave(IL_PNG,reinterpret_cast<wchar_t*>(const_cast<char*>("SampleImages/Filter_SampleOutn.png")));
+
+	/*unsigned long long begin = clock();
 	for (int i = 0; i < 1000; ++i)
 	{
 		DigitRecogniser::RecogniseDigit(std::string("SampleImages/sample1.png"));
@@ -19,6 +36,6 @@ int main()
 		DigitRecogniser::RecogniseDigit(std::string("SampleImages/sample9.png"));
 		DigitRecogniser::RecogniseDigit(std::string("SampleImages/sample0.png"));
 	}
-	std::cout << (clock() - begin) / 1000  << "  SEC";
+	std::cout << (clock() - begin) / 1000  << "  SEC";*/
 	return 0;
 }

@@ -97,7 +97,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Programming Libraries\boost_1_73_0\libs;C:\Programming Libraries\DevIL_OpenIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DevIL.lib;ILU.libILU.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DevIL.lib;ILU.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,11 +152,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Encoder.h" />
+    <ClInclude Include="include\Filter.h" />
     <ClInclude Include="include\Hopfild.h" />
     <ClInclude Include="include\ImageRecogniser.h" />
     <ClInclude Include="include\ImageTransformer.h" />
     <ClInclude Include="include\DigitRecogniser.h" />
+    <ClInclude Include="include\InputImageCutter.h" />
+    <ClInclude Include="include\Pixel.h" />
+    <ClInclude Include="include\Point.h" />
     <ClInclude Include="include\Settings.h" />
+    <ClInclude Include="include\Symbol.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="GoodRecognising.txt" />
