@@ -6,17 +6,20 @@
 #include "Settings.h"
 #include "Figure.h"
 #include "Point.h"
+class Symbol;
 static class Filter
 {
 private:
-	inline static Pixel& atPosition(Pixel* data, size_t width, size_t x, size_t y)
+	inline static Pixel& atPosition(Pixel* data, size_t width, size_t offset_x, size_t offset_y)
 	{
-		return *(data + y * width + x);
+		return *(data + offset_y * width + offset_x);
 	}
 	inline static Pixel& atPoint(Pixel* data, size_t width, Point a)
 	{
-		return *(data + a.y * width + a.x);
+		return *(data + a.offset_y * width + a.offset_x);
 	}
+	friend class Symbol;
+	friend std::ostream& operator<< (std::ostream& out, const Symbol& source);
 public:
 	static Pixel GetAverageColour(Pixel* data, size_t height, size_t width)
 	{
@@ -26,10 +29,10 @@ public:
 
 		Pixel tmp;
 
-		for (size_t y = 0; y < height; ++y)
-			for (size_t x = 0; x < width; ++x)
+		for (size_t offset_y = 0; offset_y < height; ++offset_y)
+			for (size_t offset_x = 0; offset_x < width; ++offset_x)
 			{
-				tmp = atPosition(data, width, x, y);
+				tmp = atPosition(data, width, offset_x, offset_y);
 				R_sum += tmp.R;
 				G_sum += tmp.G;
 				B_sum += tmp.B;
@@ -42,13 +45,13 @@ public:
 	{
 		auto AtThis = std::bind(atPosition, reinterpret_cast<Pixel*>(data), width, std::placeholders::_1, std::placeholders::_2);
 		volume AverageBrightness = GetAverageColour(reinterpret_cast<Pixel*>(data), height, width).brightness();
-		for (size_t y = 0; y < height; ++y)
-			for (size_t x = 0; x < width; ++x)
+		for (size_t offset_y = 0; offset_y < height; ++offset_y)
+			for (size_t offset_x = 0; offset_x < width; ++offset_x)
 			{
-				if (AtThis(x, y).brightness() > AverageBrightness)
-					AtThis(x, y) = Color::White;
+				if (AtThis(offset_x, offset_y).brightness() > AverageBrightness)
+					AtThis(offset_x, offset_y) = Color::White;
 				else
-					AtThis(x, y) = Color::Black;
+					AtThis(offset_x, offset_y) = Color::Black;
 			}
 	}
 	static void AverageFilter(unsigned char* data, const size_t height, const size_t width)
@@ -59,57 +62,57 @@ public:
 		auto minusHeight = height - 1;
 		auto minusWidth = width - 1;
 		
-		auto AtArray =  [&array](int x, int y)->Pixel& {return array[y][x]; };
+		auto AtArray =  [&array](int offset_x, int offset_y)->Pixel& {return array[offset_y][offset_x]; };
 		auto AtThis = std::bind(atPosition, reinterpret_cast<Pixel*>(data), width, std::placeholders::_1, std::placeholders::_2);
 		{
-			for (size_t y = 1; y < minusHeight - 1; ++y)
-				for (size_t x = 1; x < minusWidth - 1; ++x)
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
+				for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
 				{
-					array[y][x].R = ((unsigned long long)AtThis(x - 1, y - 1).R + AtThis(x, y - 1).R + AtThis(x + 1, y - 1).R
-						+ AtThis(x - 1, y).R + AtThis(x, y).R + AtThis(x + 1, y).R
-						+ AtThis(x - 1, y + 1).R + AtThis(x, y + 1).R + AtThis(x + 1, y + 1).R) / 9;
-					array[y][x].G = ((unsigned long long)AtThis(x - 1, y - 1).G + AtThis(x, y - 1).G + AtThis(x + 1, y - 1).G
-						+ AtThis(x - 1, y).G + AtThis(x, y).G + AtThis(x + 1, y).G
-						+ AtThis(x - 1, y + 1).G + AtThis(x, y + 1).G + AtThis(x + 1, y + 1).G) / 9;
-					array[y][x].B = ((unsigned long long)AtThis(x - 1, y - 1).B + AtThis(x, y - 1).B + AtThis(x + 1, y - 1).B
-						+ AtThis(x - 1, y).B + AtThis(x, y).B + AtThis(x + 1, y).B
-						+ AtThis(x - 1, y + 1).B + AtThis(x, y + 1).B + AtThis(x + 1, y + 1).B) / 9;
+					array[offset_y][offset_x].R = ((unsigned long long)AtThis(offset_x - 1, offset_y - 1).R + AtThis(offset_x, offset_y - 1).R + AtThis(offset_x + 1, offset_y - 1).R
+						+ AtThis(offset_x - 1, offset_y).R + AtThis(offset_x, offset_y).R + AtThis(offset_x + 1, offset_y).R
+						+ AtThis(offset_x - 1, offset_y + 1).R + AtThis(offset_x, offset_y + 1).R + AtThis(offset_x + 1, offset_y + 1).R) / 9;
+					array[offset_y][offset_x].G = ((unsigned long long)AtThis(offset_x - 1, offset_y - 1).G + AtThis(offset_x, offset_y - 1).G + AtThis(offset_x + 1, offset_y - 1).G
+						+ AtThis(offset_x - 1, offset_y).G + AtThis(offset_x, offset_y).G + AtThis(offset_x + 1, offset_y).G
+						+ AtThis(offset_x - 1, offset_y + 1).G + AtThis(offset_x, offset_y + 1).G + AtThis(offset_x + 1, offset_y + 1).G) / 9;
+					array[offset_y][offset_x].B = ((unsigned long long)AtThis(offset_x - 1, offset_y - 1).B + AtThis(offset_x, offset_y - 1).B + AtThis(offset_x + 1, offset_y - 1).B
+						+ AtThis(offset_x - 1, offset_y).B + AtThis(offset_x, offset_y).B + AtThis(offset_x + 1, offset_y).B
+						+ AtThis(offset_x - 1, offset_y + 1).B + AtThis(offset_x, offset_y + 1).B + AtThis(offset_x + 1, offset_y + 1).B) / 9;
 				}
-			for (size_t y = 1; y < minusHeight - 1; ++y)
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
 			{
-				array[y][0].R = ((unsigned long long)AtThis(0, y - 1).R + AtThis(0 + 1, y - 1).R
-					+ AtThis(0, y).R + AtThis(0 + 1, y).R
-					+ AtThis(0, y + 1).R + AtThis(0 + 1, y + 1).R) / 9;
-				array[y][0].G = ((unsigned long long)AtThis(0, y - 1).G + AtThis(0 + 1, y - 1).G
-					+ AtThis(0, y).G + AtThis(0 + 1, y).G
-					+ AtThis(0, y + 1).G + AtThis(0 + 1, y + 1).G) / 9;
-				array[y][0].B = ((unsigned long long)AtThis(0, y - 1).B + AtThis(0 + 1, y - 1).B
-					+ AtThis(0, y).B + AtThis(0 + 1, y).B
-					+ AtThis(0, y + 1).B + AtThis(0 + 1, y + 1).B) / 9;
-				array[y][minusWidth].R = ((unsigned long long)AtThis(minusWidth - 1, y - 1).R + AtThis(minusWidth, y - 1).R
-					+ AtThis(minusWidth - 1, y).R + AtThis(minusWidth, y).R
-					+ AtThis(minusWidth - 1, y + 1).R + AtThis(minusWidth, y + 1).R) / 9;
-				array[y][minusWidth].G = ((unsigned long long)AtThis(minusWidth - 1, y - 1).G + AtThis(minusWidth, y - 1).G
-					+ AtThis(minusWidth - 1, y).G + AtThis(minusWidth, y).G
-					+ AtThis(minusWidth - 1, y + 1).G + AtThis(minusWidth, y + 1).G) / 9;
-				array[y][minusWidth].B = ((unsigned long long)AtThis(minusWidth - 1, y - 1).B + AtThis(minusWidth, y - 1).B
-					+ AtThis(minusWidth - 1, y).B + AtThis(minusWidth, y).B
-					+ AtThis(minusWidth - 1, y + 1).B + AtThis(minusWidth, y + 1).B) / 9;
+				array[offset_y][0].R = ((unsigned long long)AtThis(0, offset_y - 1).R + AtThis(0 + 1, offset_y - 1).R
+					+ AtThis(0, offset_y).R + AtThis(0 + 1, offset_y).R
+					+ AtThis(0, offset_y + 1).R + AtThis(0 + 1, offset_y + 1).R) / 9;
+				array[offset_y][0].G = ((unsigned long long)AtThis(0, offset_y - 1).G + AtThis(0 + 1, offset_y - 1).G
+					+ AtThis(0, offset_y).G + AtThis(0 + 1, offset_y).G
+					+ AtThis(0, offset_y + 1).G + AtThis(0 + 1, offset_y + 1).G) / 9;
+				array[offset_y][0].B = ((unsigned long long)AtThis(0, offset_y - 1).B + AtThis(0 + 1, offset_y - 1).B
+					+ AtThis(0, offset_y).B + AtThis(0 + 1, offset_y).B
+					+ AtThis(0, offset_y + 1).B + AtThis(0 + 1, offset_y + 1).B) / 9;
+				array[offset_y][minusWidth].R = ((unsigned long long)AtThis(minusWidth - 1, offset_y - 1).R + AtThis(minusWidth, offset_y - 1).R
+					+ AtThis(minusWidth - 1, offset_y).R + AtThis(minusWidth, offset_y).R
+					+ AtThis(minusWidth - 1, offset_y + 1).R + AtThis(minusWidth, offset_y + 1).R) / 9;
+				array[offset_y][minusWidth].G = ((unsigned long long)AtThis(minusWidth - 1, offset_y - 1).G + AtThis(minusWidth, offset_y - 1).G
+					+ AtThis(minusWidth - 1, offset_y).G + AtThis(minusWidth, offset_y).G
+					+ AtThis(minusWidth - 1, offset_y + 1).G + AtThis(minusWidth, offset_y + 1).G) / 9;
+				array[offset_y][minusWidth].B = ((unsigned long long)AtThis(minusWidth - 1, offset_y - 1).B + AtThis(minusWidth, offset_y - 1).B
+					+ AtThis(minusWidth - 1, offset_y).B + AtThis(minusWidth, offset_y).B
+					+ AtThis(minusWidth - 1, offset_y + 1).B + AtThis(minusWidth, offset_y + 1).B) / 9;
 			}
-			for (size_t x = 1; x < minusWidth - 1; ++x)
+			for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
 			{
-				array[0][x].R = ((unsigned long long)AtThis(x - 1, 0).R + AtThis(x, 0).R + AtThis(x + 1, 0).R
-					+ AtThis(x - 1, 0 + 1).R + AtThis(x, 0 + 1).R + AtThis(x + 1, 0 + 1).R) / 9;
-				array[0][x].G = ((unsigned long long)AtThis(x - 1, 0).G + AtThis(x, 0).G + AtThis(x + 1, 0).G
-					+ AtThis(x - 1, 0 + 1).G + AtThis(x, 0 + 1).G + AtThis(x + 1, 0 + 1).G) / 9;
-				array[0][x].B = ((unsigned long long)AtThis(x - 1, 0).B + AtThis(x, 0).B + AtThis(x + 1, 0).B
-					+ AtThis(x - 1, 0 + 1).B + AtThis(x, 0 + 1).B + AtThis(x + 1, 0 + 1).B) / 9;
-				array[minusHeight][x].R = ((unsigned long long)AtThis(x - 1, minusHeight - 1).R + AtThis(x, minusHeight - 1).R + AtThis(x + 1, minusHeight - 1).R
-					+ AtThis(x - 1, minusHeight).R + AtThis(x, minusHeight).R + AtThis(x + 1, minusHeight).R) / 9;
-				array[minusHeight][x].G = ((unsigned long long)AtThis(x - 1, minusHeight - 1).G + AtThis(x, minusHeight - 1).G + AtThis(x + 1, minusHeight - 1).G
-					+ AtThis(x - 1, minusHeight).G + AtThis(x, minusHeight).G + AtThis(x + 1, minusHeight).G) / 9;
-				array[minusHeight][x].B = ((unsigned long long)AtThis(x - 1, minusHeight - 1).B + AtThis(x, minusHeight - 1).B + AtThis(x + 1, minusHeight - 1).B
-					+ AtThis(x - 1, minusHeight).B + AtThis(x, minusHeight).B + AtThis(x + 1, minusHeight).B) / 9;
+				array[0][offset_x].R = ((unsigned long long)AtThis(offset_x - 1, 0).R + AtThis(offset_x, 0).R + AtThis(offset_x + 1, 0).R
+					+ AtThis(offset_x - 1, 0 + 1).R + AtThis(offset_x, 0 + 1).R + AtThis(offset_x + 1, 0 + 1).R) / 9;
+				array[0][offset_x].G = ((unsigned long long)AtThis(offset_x - 1, 0).G + AtThis(offset_x, 0).G + AtThis(offset_x + 1, 0).G
+					+ AtThis(offset_x - 1, 0 + 1).G + AtThis(offset_x, 0 + 1).G + AtThis(offset_x + 1, 0 + 1).G) / 9;
+				array[0][offset_x].B = ((unsigned long long)AtThis(offset_x - 1, 0).B + AtThis(offset_x, 0).B + AtThis(offset_x + 1, 0).B
+					+ AtThis(offset_x - 1, 0 + 1).B + AtThis(offset_x, 0 + 1).B + AtThis(offset_x + 1, 0 + 1).B) / 9;
+				array[minusHeight][offset_x].R = ((unsigned long long)AtThis(offset_x - 1, minusHeight - 1).R + AtThis(offset_x, minusHeight - 1).R + AtThis(offset_x + 1, minusHeight - 1).R
+					+ AtThis(offset_x - 1, minusHeight).R + AtThis(offset_x, minusHeight).R + AtThis(offset_x + 1, minusHeight).R) / 9;
+				array[minusHeight][offset_x].G = ((unsigned long long)AtThis(offset_x - 1, minusHeight - 1).G + AtThis(offset_x, minusHeight - 1).G + AtThis(offset_x + 1, minusHeight - 1).G
+					+ AtThis(offset_x - 1, minusHeight).G + AtThis(offset_x, minusHeight).G + AtThis(offset_x + 1, minusHeight).G) / 9;
+				array[minusHeight][offset_x].B = ((unsigned long long)AtThis(offset_x - 1, minusHeight - 1).B + AtThis(offset_x, minusHeight - 1).B + AtThis(offset_x + 1, minusHeight - 1).B
+					+ AtThis(offset_x - 1, minusHeight).B + AtThis(offset_x, minusHeight).B + AtThis(offset_x + 1, minusHeight).B) / 9;
 			}
 			array[0][0].R = ((unsigned long long)AtThis(0, 0).R + AtThis(0, 1).R
 				+ AtThis(1, 0).R + AtThis(1, 1).R) / 4;
@@ -139,60 +142,60 @@ public:
 				+ AtThis(minusWidth - 1, minusHeight).B + AtThis(minusWidth - 1, minusHeight - 1).B) / 4;
 		}
 		{
-			for (size_t y = 1; y < minusHeight - 1; ++y)
-				for (size_t x = 1; x < minusWidth - 1; ++x)
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
+				for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
 				{
-					AtThis(x,y).R = ((unsigned long long)AtArray(x - 1, y - 1).R
-						+ AtArray(x, y - 1).R
-						+ AtArray(x + 1, y - 1).R
-						+ AtArray(x - 1, y).R
-						+ AtArray(x, y).R
-						+ AtArray(x + 1, y).R
-						+ AtArray(x - 1, y + 1).R
-						+ AtArray(x, y + 1).R
-						+ AtArray(x + 1, y + 1).R) / 9;
-					AtThis(x, y).G = ((unsigned long long)AtArray(x - 1, y - 1).G + AtArray(x, y - 1).G + AtArray(x + 1, y - 1).G
-						+ AtArray(x - 1, y).G + AtArray(x, y).G + AtArray(x + 1, y).G
-						+ AtArray(x - 1, y + 1).G + AtArray(x, y + 1).G + AtArray(x + 1, y + 1).G) / 9;
-					AtThis(x, y).B = ((unsigned long long)AtArray(x - 1, y - 1).B + AtArray(x, y - 1).B + AtArray(x + 1, y - 1).B
-						+ AtArray(x - 1, y).B + AtArray(x, y).B + AtArray(x + 1, y).B
-						+ AtArray(x - 1, y + 1).B + AtArray(x, y + 1).B + AtArray(x + 1, y + 1).B) / 9;
+					AtThis(offset_x,offset_y).R = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).R
+						+ AtArray(offset_x, offset_y - 1).R
+						+ AtArray(offset_x + 1, offset_y - 1).R
+						+ AtArray(offset_x - 1, offset_y).R
+						+ AtArray(offset_x, offset_y).R
+						+ AtArray(offset_x + 1, offset_y).R
+						+ AtArray(offset_x - 1, offset_y + 1).R
+						+ AtArray(offset_x, offset_y + 1).R
+						+ AtArray(offset_x + 1, offset_y + 1).R) / 9;
+					AtThis(offset_x, offset_y).G = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).G + AtArray(offset_x, offset_y - 1).G + AtArray(offset_x + 1, offset_y - 1).G
+						+ AtArray(offset_x - 1, offset_y).G + AtArray(offset_x, offset_y).G + AtArray(offset_x + 1, offset_y).G
+						+ AtArray(offset_x - 1, offset_y + 1).G + AtArray(offset_x, offset_y + 1).G + AtArray(offset_x + 1, offset_y + 1).G) / 9;
+					AtThis(offset_x, offset_y).B = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).B + AtArray(offset_x, offset_y - 1).B + AtArray(offset_x + 1, offset_y - 1).B
+						+ AtArray(offset_x - 1, offset_y).B + AtArray(offset_x, offset_y).B + AtArray(offset_x + 1, offset_y).B
+						+ AtArray(offset_x - 1, offset_y + 1).B + AtArray(offset_x, offset_y + 1).B + AtArray(offset_x + 1, offset_y + 1).B) / 9;
 				}
-			for (size_t y = 1; y < minusHeight - 1; ++y)
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
 			{
-				AtThis(0, y).R = ((unsigned long long)AtArray(0, y - 1).R + AtArray(0 + 1, y - 1).R
-					+ AtArray(0, y).R + AtArray(0 + 1, y).R
-					+ AtArray(0, y + 1).R + AtArray(0 + 1, y + 1).R) / 9;
-				AtThis(0, y).G = ((unsigned long long)AtArray(0, y - 1).G + AtArray(0 + 1, y - 1).G
-					+ AtArray(0, y).G + AtArray(0 + 1, y).G
-					+ AtArray(0, y + 1).G + AtArray(0 + 1, y + 1).G) / 9;
-				AtThis(0, y).B = ((unsigned long long)AtArray(0, y - 1).B + AtArray(0 + 1, y - 1).B
-					+ AtArray(0, y).B + AtArray(0 + 1, y).B
-					+ AtArray(0, y + 1).B + AtArray(0 + 1, y + 1).B) / 9;
-				AtThis(minusWidth, y).R = ((unsigned long long)AtArray(minusWidth - 1, y - 1).R + AtArray(minusWidth, y - 1).R
-					+ AtArray(minusWidth - 1, y).R + AtArray(minusWidth, y).R
-					+ AtArray(minusWidth - 1, y + 1).R + AtArray(minusWidth, y + 1).R) / 9;
-				AtThis(minusWidth, y).G = ((unsigned long long)AtArray(minusWidth - 1, y - 1).G + AtArray(minusWidth, y - 1).G
-					+ AtArray(minusWidth - 1, y).G + AtArray(minusWidth, y).G
-					+ AtArray(minusWidth - 1, y + 1).G + AtArray(minusWidth, y + 1).G) / 9;
-				AtThis(minusWidth, y).B = ((unsigned long long)AtArray(minusWidth - 1, y - 1).B + AtArray(minusWidth, y - 1).B
-					+ AtArray(minusWidth - 1, y).B + AtArray(minusWidth, y).B
-					+ AtArray(minusWidth - 1, y + 1).B + AtArray(minusWidth, y + 1).B) / 9;
+				AtThis(0, offset_y).R = ((unsigned long long)AtArray(0, offset_y - 1).R + AtArray(0 + 1, offset_y - 1).R
+					+ AtArray(0, offset_y).R + AtArray(0 + 1, offset_y).R
+					+ AtArray(0, offset_y + 1).R + AtArray(0 + 1, offset_y + 1).R) / 9;
+				AtThis(0, offset_y).G = ((unsigned long long)AtArray(0, offset_y - 1).G + AtArray(0 + 1, offset_y - 1).G
+					+ AtArray(0, offset_y).G + AtArray(0 + 1, offset_y).G
+					+ AtArray(0, offset_y + 1).G + AtArray(0 + 1, offset_y + 1).G) / 9;
+				AtThis(0, offset_y).B = ((unsigned long long)AtArray(0, offset_y - 1).B + AtArray(0 + 1, offset_y - 1).B
+					+ AtArray(0, offset_y).B + AtArray(0 + 1, offset_y).B
+					+ AtArray(0, offset_y + 1).B + AtArray(0 + 1, offset_y + 1).B) / 9;
+				AtThis(minusWidth, offset_y).R = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).R + AtArray(minusWidth, offset_y - 1).R
+					+ AtArray(minusWidth - 1, offset_y).R + AtArray(minusWidth, offset_y).R
+					+ AtArray(minusWidth - 1, offset_y + 1).R + AtArray(minusWidth, offset_y + 1).R) / 9;
+				AtThis(minusWidth, offset_y).G = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).G + AtArray(minusWidth, offset_y - 1).G
+					+ AtArray(minusWidth - 1, offset_y).G + AtArray(minusWidth, offset_y).G
+					+ AtArray(minusWidth - 1, offset_y + 1).G + AtArray(minusWidth, offset_y + 1).G) / 9;
+				AtThis(minusWidth, offset_y).B = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).B + AtArray(minusWidth, offset_y - 1).B
+					+ AtArray(minusWidth - 1, offset_y).B + AtArray(minusWidth, offset_y).B
+					+ AtArray(minusWidth - 1, offset_y + 1).B + AtArray(minusWidth, offset_y + 1).B) / 9;
 			}
-			for (size_t x = 1; x < minusWidth - 1; ++x)
+			for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
 			{
-				AtThis(x, 0).R = ((unsigned long long)AtArray(x - 1, 0).R + AtArray(x, 0).R + AtArray(x + 1, 0).R
-					+ AtArray(x - 1, 0 + 1).R + AtArray(x, 0 + 1).R + AtArray(x + 1, 0 + 1).R) / 9;
-				AtThis(x, 0).G = ((unsigned long long)AtArray(x - 1, 0).G + AtArray(x, 0).G + AtArray(x + 1, 0).G
-					+ AtArray(x - 1, 0 + 1).G + AtArray(x, 0 + 1).G + AtArray(x + 1, 0 + 1).G) / 9;
-				AtThis(x, 0).B = ((unsigned long long)AtArray(x - 1, 0).B + AtArray(x, 0).B + AtArray(x + 1, 0).B
-					+ AtArray(x - 1, 0 + 1).B + AtArray(x, 0 + 1).B + AtArray(x + 1, 0 + 1).B) / 9;
-				AtThis(x, minusHeight).R = ((unsigned long long)AtArray(x - 1, minusHeight - 1).R + AtArray(x, minusHeight - 1).R + AtArray(x + 1, minusHeight - 1).R
-					+ AtArray(x - 1, minusHeight).R + AtArray(x, minusHeight).R + AtArray(x + 1, minusHeight).R) / 9;
-				AtThis(x, minusHeight).G = ((unsigned long long)AtArray(x - 1, minusHeight - 1).G + AtArray(x, minusHeight - 1).G + AtArray(x + 1, minusHeight - 1).G
-					+ AtArray(x - 1, minusHeight).G + AtArray(x, minusHeight).G + AtArray(x + 1, minusHeight).G) / 9;
-				AtThis(x, minusHeight).B = ((unsigned long long)AtArray(x - 1, minusHeight - 1).B + AtArray(x, minusHeight - 1).B + AtArray(x + 1, minusHeight - 1).B
-					+ AtArray(x - 1, minusHeight).B + AtArray(x, minusHeight).B + AtArray(x + 1, minusHeight).B) / 9;
+				AtThis(offset_x, 0).R = ((unsigned long long)AtArray(offset_x - 1, 0).R + AtArray(offset_x, 0).R + AtArray(offset_x + 1, 0).R
+					+ AtArray(offset_x - 1, 0 + 1).R + AtArray(offset_x, 0 + 1).R + AtArray(offset_x + 1, 0 + 1).R) / 9;
+				AtThis(offset_x, 0).G = ((unsigned long long)AtArray(offset_x - 1, 0).G + AtArray(offset_x, 0).G + AtArray(offset_x + 1, 0).G
+					+ AtArray(offset_x - 1, 0 + 1).G + AtArray(offset_x, 0 + 1).G + AtArray(offset_x + 1, 0 + 1).G) / 9;
+				AtThis(offset_x, 0).B = ((unsigned long long)AtArray(offset_x - 1, 0).B + AtArray(offset_x, 0).B + AtArray(offset_x + 1, 0).B
+					+ AtArray(offset_x - 1, 0 + 1).B + AtArray(offset_x, 0 + 1).B + AtArray(offset_x + 1, 0 + 1).B) / 9;
+				AtThis(offset_x, minusHeight).R = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).R + AtArray(offset_x, minusHeight - 1).R + AtArray(offset_x + 1, minusHeight - 1).R
+					+ AtArray(offset_x - 1, minusHeight).R + AtArray(offset_x, minusHeight).R + AtArray(offset_x + 1, minusHeight).R) / 9;
+				AtThis(offset_x, minusHeight).G = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).G + AtArray(offset_x, minusHeight - 1).G + AtArray(offset_x + 1, minusHeight - 1).G
+					+ AtArray(offset_x - 1, minusHeight).G + AtArray(offset_x, minusHeight).G + AtArray(offset_x + 1, minusHeight).G) / 9;
+				AtThis(offset_x, minusHeight).B = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).B + AtArray(offset_x, minusHeight - 1).B + AtArray(offset_x + 1, minusHeight - 1).B
+					+ AtArray(offset_x - 1, minusHeight).B + AtArray(offset_x, minusHeight).B + AtArray(offset_x + 1, minusHeight).B) / 9;
 			}
 			AtThis(0, 0).R = ((unsigned long long)AtArray(0, 0).R + AtArray(0, 1).R
 				+ AtArray(1, 0).R + AtArray(1, 1).R) / 4;
@@ -227,9 +230,9 @@ public:
 	inline static void Negative(unsigned char* data, const size_t height, const size_t width)
 	{
 		auto AtThis = std::bind(atPosition, reinterpret_cast<Pixel*>(data), width, std::placeholders::_1, std::placeholders::_2);
-		for (size_t y = 0; y < height; ++y)
-			for (size_t x = 0; x < width; ++x)
-				AtThis(x, y).SetNegative();
+		for (size_t offset_y = 0; offset_y < height; ++offset_y)
+			for (size_t offset_x = 0; offset_x < width; ++offset_x)
+				AtThis(offset_x, offset_y).SetNegative();
 	}
 	inline static bool isDarkImage(unsigned char* data, const size_t height, const size_t width)
 	{
@@ -239,150 +242,150 @@ public:
 	{
 		return GetAverageColour(reinterpret_cast<Pixel*>(data), height, width).brightness() >= 127;
 	}
-	inline static Figure CatchFigure(unsigned char* data, bool** FlagWereLookedArray, const size_t height, const size_t width, int x, int y)
+	inline static Figure CatchFigure(unsigned char* data, bool** FlagWereLookedArray, const size_t height, const size_t width, int offset_x, int offset_y)
 	{
 		auto AtData = std::bind(atPoint, reinterpret_cast<Pixel*>(data), width, std::placeholders::_1);
 		std::queue<Point> ToVisit;
 		std::list<Point> ToRemember;
 
-		ToVisit.push(Point(x,y));
+		ToVisit.push(Point(offset_x,offset_y));
 
 		while (!ToVisit.empty())
 		{
 			auto target = ToVisit.front();
 							ToVisit.pop();
 
-			if (target.x > -1)
+			if (target.offset_x > -1)
 			{
-				if (target.y > -1)
+				if (target.offset_y > -1)
 				{
 					if (Pixel::colorDifference(AtData(target.UpLeft()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y - 1][x - 1])
+						&& !FlagWereLookedArray[offset_y - 1][offset_x - 1])
 					{
 						ToVisit.push(target.UpLeft());
 						ToRemember.push_back(target.UpLeft());
-						FlagWereLookedArray[y - 1][x - 1] = true;
+						FlagWereLookedArray[offset_y - 1][offset_x - 1] = true;
 					}
 				}
 				///
 				{	
 					if (Pixel::colorDifference(AtData(target.Left()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y][x - 1])
+						&& !FlagWereLookedArray[offset_y][offset_x - 1])
 					{
 						ToVisit.push(target.Left());
 						ToRemember.push_back(target.Left());
-						FlagWereLookedArray[y][x - 1] = true;
+						FlagWereLookedArray[offset_y][offset_x - 1] = true;
 					}
 				}
 				///
-				if (target.y < (height - 1))
+				if (target.offset_y < (height - 1))
 				{
 					if (Pixel::colorDifference(AtData(target.DownLeft()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y + 1][x - 1])
+						&& !FlagWereLookedArray[offset_y + 1][offset_x - 1])
 					{
 						ToVisit.push(target.DownLeft());
 						ToRemember.push_back(target.DownLeft());
-						FlagWereLookedArray[y + 1][x - 1] = true;
+						FlagWereLookedArray[offset_y + 1][offset_x - 1] = true;
 					}
 				}
 			}
 			///
 			{
-				if (target.y > -1)
+				if (target.offset_y > -1)
 				{
 					if (Pixel::colorDifference(AtData(target.Up()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y - 1][x])
+						&& !FlagWereLookedArray[offset_y - 1][offset_x])
 					{
 						ToVisit.push(target.Up());
 						ToRemember.push_back(target.Up());
-						FlagWereLookedArray[y - 1][x] = true;
+						FlagWereLookedArray[offset_y - 1][offset_x] = true;
 					}
 				}
 				///
-				if (target.y < (height - 1))
+				if (target.offset_y < (height - 1))
 				{
 					if (Pixel::colorDifference(AtData(target.Down()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y + 1][x])
+						&& !FlagWereLookedArray[offset_y + 1][offset_x])
 					{
 						ToVisit.push(target.Down());
 						ToRemember.push_back(target.Down());
-						FlagWereLookedArray[y + 1][x] = true;
+						FlagWereLookedArray[offset_y + 1][offset_x] = true;
 					}
 				}
 			}
 			///
-			if (target.x < (width - 1))
+			if (target.offset_x < (width - 1))
 			{
-				if (target.y > -1)
+				if (target.offset_y > -1)
 				{
 					if (Pixel::colorDifference(AtData(target.UpRight()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y - 1][x + 1])
+						&& !FlagWereLookedArray[offset_y - 1][offset_x + 1])
 					{
 						ToVisit.push(target.UpRight());
 						ToRemember.push_back(target.UpRight());
-						FlagWereLookedArray[y - 1][x + 1] = true;
+						FlagWereLookedArray[offset_y - 1][offset_x + 1] = true;
 					}
 				}
 				///
 				if (Pixel::colorDifference(AtData(target.Right()), AtData(target))
 					< Settings::BorderSeparationColorDifference
-					&& !FlagWereLookedArray[y][x + 1])
+					&& !FlagWereLookedArray[offset_y][offset_x + 1])
 				{
 					ToVisit.push(target.Right());
 					ToRemember.push_back(target.Right());
-					FlagWereLookedArray[y][x + 1] = true;
+					FlagWereLookedArray[offset_y][offset_x + 1] = true;
 				}
 				///
-				if (target.y < (height - 1))
+				if (target.offset_y < (height - 1))
 				{
 					if (Pixel::colorDifference(AtData(target.DownRight()), AtData(target))
 						< Settings::BorderSeparationColorDifference
-						&& !FlagWereLookedArray[y + 1][x + 1])
+						&& !FlagWereLookedArray[offset_y + 1][offset_x + 1])
 					{
 						ToVisit.push(target.DownRight());
 						ToRemember.push_back(target.DownRight());
-						FlagWereLookedArray[y + 1][x + 1] = true;
+						FlagWereLookedArray[offset_y + 1][offset_x + 1] = true;
 					}
 				}
 			}
 		}
 
-		size_t minX = x;
-		size_t maxX = x;
-		size_t minY = y;
-		size_t maxY = y;
+		size_t minX = offset_x;
+		size_t maxX = offset_x;
+		size_t minY = offset_y;
+		size_t maxY = offset_y;
 
 		for (auto itr = ToRemember.begin(); itr != ToRemember.end(); ++itr)
 		{
-			if (itr->x < minX)
-				minX = itr->x;
+			if (itr->offset_x < minX)
+				minX = itr->offset_x;
 			else
-				if (itr->x > maxX)
-					maxX = itr->x;
+				if (itr->offset_x > maxX)
+					maxX = itr->offset_x;
 
-			if (itr->y < minY)
-				minY = itr->y;
+			if (itr->offset_y < minY)
+				minY = itr->offset_y;
 			else
-				if (itr->y > maxY)
-					maxY = itr->y;
+				if (itr->offset_y > maxY)
+					maxY = itr->offset_y;
 		}
 
-		size_t width = maxX - minX + 1;
-		size_t height = maxY - minY + 1;
+		size_t width_sym = maxX - minX + 1;
+		size_t height_sym = maxY - minY + 1;
 
-		auto size = width * height;
-		Pixel* SymbolImage = new Pixel[width * height];
+		auto size = width_sym * height_sym;
+		Pixel* SymbolImage = new Pixel[size];
 		for (int i = 0; i < size; ++i)
 			SymbolImage[i] = Color::White;
 
-		auto AtImage = [&SymbolImage, width](Point a)->Pixel& 
-					{return SymbolImage[a.x + a.y * width]; };
+		auto AtImage = [&SymbolImage, width_sym](Point a)->Pixel&
+					{return SymbolImage[a.offset_x + a.offset_y * width_sym]; };
 		for (auto itr = ToRemember.begin(); itr != ToRemember.end(); ++itr)
 			AtImage(*itr) = Color::Black;
 

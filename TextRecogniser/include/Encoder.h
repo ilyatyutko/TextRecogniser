@@ -36,8 +36,8 @@ public:
 		: std::ofstream(fname, std::ios_base::binary)
 		, bitcount(0)
 		, buffer(0) {}
-	void putBit(bool x) {
-		unsigned char ch = x;
+	void putBit(bool offset_x) {
+		unsigned char ch = offset_x;
 		buffer |= (ch << (7 - bitcount));
 		++bitcount;
 		if (bitcount == 8) {
@@ -61,8 +61,8 @@ public:
 	obitstring() : str(""), buffer(0), bitcount(0) {}
 	obitstring(const std::string &inStr) : str(inStr), buffer(0), bitcount(0) {}
 	obitstring(std::string &&inStr) : str(std::move(inStr)), buffer(0), bitcount(0) {}
-	void putBit(bool x) {
-		unsigned char ch = x;
+	void putBit(bool offset_x) {
+		unsigned char ch = offset_x;
 		buffer = buffer | (ch << (7 - bitcount));
 		++bitcount;
 		if (bitcount == 8) {

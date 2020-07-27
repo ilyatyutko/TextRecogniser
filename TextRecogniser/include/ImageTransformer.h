@@ -13,9 +13,9 @@ class ImageTransformer
 public:
 	ILuint ID;
 	Pixel* data;
-	inline Pixel& atPosition(size_t y, size_t x) const
+	inline Pixel& atPosition(size_t offset_y, size_t offset_x) const
 	{
-		return *(data + y * Settings::ImageRecognitionWidth + x);
+		return *(data + offset_y * Settings::ImageRecognitionWidth + offset_x);
 	}
 	Pixel averageColour() const
 	{
@@ -25,10 +25,10 @@ public:
 
 		Pixel tmp;
 
-		for(int y = 0; y < Settings::ImageRecognitionHeight; ++y)
-			for (int x = 0; x < Settings::ImageRecognitionWidth; ++x)
+		for(int offset_y = 0; offset_y < Settings::ImageRecognitionHeight; ++offset_y)
+			for (int offset_x = 0; offset_x < Settings::ImageRecognitionWidth; ++offset_x)
 			{
-				tmp = this->atPosition(y,x);
+				tmp = this->atPosition(offset_y,offset_x);
 				R_sum += tmp.R;
 				G_sum += tmp.G;
 				B_sum += tmp.B;
@@ -44,10 +44,10 @@ public:
 		result.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
 
 		volume AverageBrightness = averageColour().brightness();
-		for (int y = 0; y < Settings::ImageRecognitionHeight; ++y)
-			for (int x = 0; x < Settings::ImageRecognitionWidth; ++x)
+		for (int offset_y = 0; offset_y < Settings::ImageRecognitionHeight; ++offset_y)
+			for (int offset_x = 0; offset_x < Settings::ImageRecognitionWidth; ++offset_x)
 			{
-				if (this->atPosition(y, x).brightness() > AverageBrightness)
+				if (this->atPosition(offset_y, offset_x).brightness() > AverageBrightness)
 					result.push_back(false);
 				else
 					result.push_back(true);

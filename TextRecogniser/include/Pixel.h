@@ -8,6 +8,14 @@ public:
 	volume B;
 	volume T = 255;
 
+	inline bool operator==(const Pixel& b)const
+	{
+		return R == b.R &&
+			G == b.G &&
+			B == b.B &&
+			T == b.T;
+	}
+
 	inline volume brightness() const
 	{
 		return std::round(((double)R + (double)G + (double)B) / 3 * (double)T / 256);

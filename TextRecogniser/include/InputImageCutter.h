@@ -51,9 +51,9 @@ public:
 			for (int i = 0; i < Height; ++i)
 				FlagWereLookedArray[i] = new bool[Width];
 
-			for (int y = 0; y < Height; ++y)
-				for (int x = 0; x < Width; ++x)
-					FlagWereLookedArray[y][x] = false;
+			for (int offset_y = 0; offset_y < Height; ++offset_y)
+				for (int offset_x = 0; offset_x < Width; ++offset_x)
+					FlagWereLookedArray[offset_y][offset_x] = false;
 
 
 
