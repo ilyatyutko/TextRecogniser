@@ -26,12 +26,6 @@
     <ClInclude Include="include\Hopfild.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\ImageRecogniser.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ImageTransformer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="include\Settings.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -50,7 +44,13 @@
     <ClInclude Include="include\Point.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Symbol.h">
+    <ClInclude Include="include\Figure.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImageRecogniser.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NumberRecogniser.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

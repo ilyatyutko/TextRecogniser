@@ -152,16 +152,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Encoder.h" />
+    <ClInclude Include="include\Figure.h" />
     <ClInclude Include="include\Filter.h" />
     <ClInclude Include="include\Hopfild.h" />
+    <ClInclude Include="include\NumberRecogniser.h" />
     <ClInclude Include="include\ImageRecogniser.h" />
-    <ClInclude Include="include\ImageTransformer.h" />
     <ClInclude Include="include\DigitRecogniser.h" />
     <ClInclude Include="include\InputImageCutter.h" />
     <ClInclude Include="include\Pixel.h" />
     <ClInclude Include="include\Point.h" />
     <ClInclude Include="include\Settings.h" />
-    <ClInclude Include="include\Symbol.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="GoodRecognising.txt" />

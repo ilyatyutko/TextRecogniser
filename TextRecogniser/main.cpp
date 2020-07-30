@@ -1,13 +1,23 @@
-#include <bitset>
 #include <iostream>
 #include <ctime>
-//#include "include/DigitRecogniser.h"
-#include <IL/il.h>
-#include "include/Filter.h"
+#include "include/NumberRecogniser.h"
 
 int main()
 {
-	ILuint id;
+	//auto answer = InputImageCutter::CutImage(std::string("SampleImages/RecogniseSample.png"));
+	//return 0;
+
+	auto str = InputImageCutter::CutImage(std::string("SampleImages/RecogniseSample.png"));
+	for (auto itr = str.begin(); itr != str.end(); ++itr)
+		/*itr->SaveAsImage();*/
+		std::cout << DigitRecogniser::RecogniseDigit(*itr);
+
+	//auto str = NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png"));
+	//int qweweqwe = 1;
+
+
+
+	/*ILuint id;
 	ilInit();
 	ilGenImages(1, &id);
 	ilBindImage(id);
@@ -20,7 +30,7 @@ int main()
 	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
 	Filter::AverageFilter(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
 	Filter::TransformToBlackAndWhiteForm(ilGetData(), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_WIDTH));
-	ilSave(IL_PNG,reinterpret_cast<wchar_t*>(const_cast<char*>("SampleImages/Filter_SampleOutn.png")));
+	ilSave(IL_PNG,reinterpret_cast<wchar_t*>(const_cast<char*>("SampleImages/Filter_SampleOutn.png")));*/
 
 	/*unsigned long long begin = clock();
 	for (int i = 0; i < 1000; ++i)

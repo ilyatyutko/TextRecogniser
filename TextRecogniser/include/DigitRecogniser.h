@@ -1,33 +1,12 @@
 #pragma once
 #include <string>
 #include "ImageRecogniser.h"
+#include "Figure.h"
 
 static class DigitRecogniser
 {
 public:
-	static int RecogniseDigit(const std::string& FileName)
-	{
-		if (!RecognisersAreInitialized)
-			Initialization();
-
-		ImageTransformer Image(FileName);
-
-		unsigned char NumberRate[11];
-		NumberRate[0] = NumberRate[1] = NumberRate[2]
-			= NumberRate[3] = NumberRate[4] = NumberRate[5]
-			= NumberRate[6] = NumberRate[7] = NumberRate[8] 
-			= NumberRate[9] = 0;
-		for (int i = 0; i < 6; ++i)
-			++NumberRate[Recognisers[i].RecognizeImage(Image)];
-
-		int index = 0;
-		for (int i = 0; i < 10; ++i)
-			if (NumberRate[i] > NumberRate[index])
-				index = i;
-
-		return index;
-	}
-	static int RecogniseDigit(const ImageTransformer& Image)
+	static int RecogniseDigit(const Figure& Image)
 	{
 		if (!RecognisersAreInitialized)
 			Initialization();
@@ -44,7 +23,6 @@ public:
 		for (int i = 0; i < 10; ++i)
 			if (NumberRate[i] > NumberRate[index])
 				index = i;
-
 		return index;
 	}
 private:

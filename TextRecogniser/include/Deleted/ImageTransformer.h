@@ -68,7 +68,7 @@ public:
 
 		iluContrast(Settings::ContrastFilterPower);
 		iluSharpen(Settings::SharpeningLevel, Settings::SharpeningIterationsCount);
-		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 8);
+		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 1);
 
 		data =  reinterpret_cast<Pixel*>(ilGetData());
 	}

@@ -15,6 +15,13 @@ public:
 			B == b.B &&
 			T == b.T;
 	}
+	inline bool operator!=(const Pixel& b)const
+	{
+		return R != b.R ||
+			G != b.G ||
+			B != b.B ||
+			T != b.T;
+	}
 
 	inline volume brightness() const
 	{
@@ -30,9 +37,25 @@ public:
 	}
 	inline void SetNegative()
 	{
-		this->R = ~this->R;
-		this->G = ~this->G;
-		this->B = ~this->B;
+		this->R = ~(this->R);
+		this->G = ~(this->G);
+		this->B = ~(this->B);
+	}
+	inline bool isDark() const
+	{
+		return this->brightness() < 127;
+	}
+	inline bool isDarker(const Pixel& a)const
+	{
+		return this->brightness() < a.brightness();
+	}
+	inline bool isBrighter(const Pixel& a)const
+	{
+		return this->brightness() > a.brightness();
+	}
+	inline bool isBright() const
+	{
+		return this->brightness() > 126;
 	}
 	inline bool isBlack()const
 	{
@@ -40,7 +63,7 @@ public:
 	}
 	inline bool isWhite()const
 	{
-		return R & G & B == 255;
+		return (R & G & B) == 255;
 	}
 	inline static volume colorDifference(const Pixel& a, const Pixel& b)
 	{
@@ -59,7 +82,7 @@ public:
 		, B(0)
 	{}
 };
-namespace Color {
+namespace Colour {
 	Pixel Black = Pixel(0, 0, 0);
 	Pixel White = Pixel(255, 255, 255);
 	Pixel Transparent = Pixel(0,0,0,0);

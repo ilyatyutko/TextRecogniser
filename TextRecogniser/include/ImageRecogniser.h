@@ -5,15 +5,12 @@
 #include <list>
 #include <string>
 #include <iostream>
-#include "ImageTransformer.h"
 #include "Hopfild.h"
 #include "Settings.h"
+#include "Figure.h"
+#include "InputImageCutter.h"
 
 using FileName = std::string;
-namespace 
-{
-	
-}
 
 class ImageRecogniser
 {
@@ -29,18 +26,20 @@ public:
 
 		for (auto& file : FileList)
 		{
-			ImageTransformer picture(file.first);
+			//ImageTransformer picture(file.first);
+			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
+			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
-				std::make_pair(picture.Get_Binary_Form()
+				std::make_pair(tmp
 							   , file.second));
 		}
 
 		//there 10 is element, which means impossibility to recognise
 		NeuralNet = Hopfild<int>(Images, 10); 
 	}
-	int RecognizeImage(const ImageTransformer& BinaryImage) const
+	int RecognizeImage(const Figure& BinaryImage) const
 	{
-		return NeuralNet.recognition(BinaryImage.Get_Binary_Form());
+		return NeuralNet.recognition(BinaryImage.GetBlackAndWhiteVector());
 	}
 	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
 	{
