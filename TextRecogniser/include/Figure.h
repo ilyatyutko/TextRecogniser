@@ -130,7 +130,7 @@ public:
 
 		return answer;
 	}
-	std::vector<bool> GetBoolVector()const
+	std::vector<bool> GetBlackAndWhiteVector()const
 	{
 		std::vector<bool> answer;
 		answer.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
