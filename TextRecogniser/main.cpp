@@ -7,13 +7,14 @@ int main()
 	//auto answer = InputImageCutter::CutImage(std::string("SampleImages/RecogniseSample.png"));
 	//return 0;
 
-	auto str = InputImageCutter::CutImage(std::string("SampleImages/RecogniseSample.png"));
-	for (auto itr = str.begin(); itr != str.end(); ++itr)
-		/*itr->SaveAsImage();*/
-		std::cout << DigitRecogniser::RecogniseDigit(*itr);
+	//auto str = InputImageCutter::CutImage(std::string("SampleImages/RecogniseSample.png"));
+	//for (auto itr = str.begin(); itr != str.end(); ++itr)
+	//	/*itr->SaveAsImage();*/
+	//	std::cout << DigitRecogniser::RecogniseDigit(*itr);
 
-	//auto str = NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png"));
-	//int qweweqwe = 1;
+	auto str = NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png"));
+	
+	std::cout << str;//int qweweqwe = 1;
 
 
 

@@ -25,15 +25,11 @@ public:
 
 	inline volume brightness() const
 	{
-		return std::round(((double)R + (double)G + (double)B) / 3 * (double)T / 256);
+		return std::round((double)(R + G + B) * T / 256. / 3.);
 	}
 	inline Pixel GetNegative() const
 	{
-		Pixel answer;
-		answer.R = ~this->R;
-		answer.G = ~this->G;
-		answer.B = ~this->B;
-		return answer;
+		return Pixel(~this->R, ~this->G, ~this->B);
 	}
 	inline void SetNegative()
 	{
@@ -45,11 +41,11 @@ public:
 	{
 		return this->brightness() < 127;
 	}
-	inline bool isDarker(const Pixel& a)const
+	inline bool isDarkerThan(const Pixel& a)const
 	{
 		return this->brightness() < a.brightness();
 	}
-	inline bool isBrighter(const Pixel& a)const
+	inline bool isBrighterThan(const Pixel& a)const
 	{
 		return this->brightness() > a.brightness();
 	}
@@ -67,7 +63,7 @@ public:
 	}
 	inline static volume colorDifference(const Pixel& a, const Pixel& b)
 	{
-		return std::ceil(std::abs(a.R - b.R) + std::abs(a.G - b.G) + std::abs(a.B - b.B)) / 3.;
+		return std::ceil(std::abs(a.R - b.R) + std::abs(a.G - b.G) + std::abs(a.B - b.B));
 	}
 
 	Pixel(volume R_set, volume G_set, volume B_set, volume T_set = 255)
@@ -77,9 +73,10 @@ public:
 		, T(T_set)
 	{}
 	Pixel()
-		:R(0)
+		: R(0)
 		, G(0)
 		, B(0)
+		, T(255)
 	{}
 };
 namespace Colour {

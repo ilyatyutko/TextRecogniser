@@ -2,7 +2,6 @@
 #include <functional>
 #include <queue>
 #include <list>
-//#include "ImageTransformer.h"
 #include "Settings.h"
 #include "Point.h"
 #include "Pixel.h"
