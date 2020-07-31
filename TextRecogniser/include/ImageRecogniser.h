@@ -15,31 +15,29 @@ using FileName = std::string;
 class ImageRecogniser
 {
 private:
-	Hopfild<int> NeuralNet;
+	Hopfild<char> NeuralNet;
 public:
-	ImageRecogniser(const std::list<std::pair<FileName, int>>& FileList)
+	ImageRecogniser(const std::list<std::pair<FileName, char>>& FileList)
 	{
 		if (FileList.size() == 0)
 			throw std::exception("Empty Input List");
 
-		std::list<std::pair<std::vector<bool>, int>> Images;
+		std::list<std::pair<std::vector<bool>, char>> Images;
 
 		for (auto& file : FileList)
 		{
-			//ImageTransformer picture(file.first);
-			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
-			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
-				std::make_pair(tmp
+				std::make_pair(
+					InputImageCutter::CutImage(file.first).front().GetBoolVector()
 							   , file.second));
 		}
 
-		//there 10 is element, which means impossibility to recognise
-		NeuralNet = Hopfild<int>(Images, 10); 
+		//there '\a' is element, which means impossibility to recognise
+		NeuralNet = Hopfild<char>(Images, '\a'); 
 	}
 	int RecognizeImage(const Figure& BinaryImage) const
 	{
-		return NeuralNet.recognition(BinaryImage.GetBlackAndWhiteVector());
+		return NeuralNet.recognition(BinaryImage.GetBoolVector());
 	}
 	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
 	{
