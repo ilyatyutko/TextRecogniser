@@ -24,6 +24,7 @@ public:
 		unsigned long long B_sum = 0;
 
 		Pixel tmp;
+
 		for (size_t offset_y = 0; offset_y < RealHeight; ++offset_y)
 			for (size_t offset_x = 0; offset_x < RealWidth; ++offset_x)
 			{
@@ -32,9 +33,9 @@ public:
 				G_sum += tmp.G;
 				B_sum += tmp.B;
 			}
-		return Pixel(std::floor(R_sum / ((double)RealHeight * RealWidth)),
-			std::floor(G_sum / ((double)RealHeight * RealWidth)),
-			std::floor(B_sum / ((double)RealHeight * RealWidth)));
+		return Pixel(std::floor(R_sum / ((unsigned long long)RealHeight * RealWidth)),
+			std::floor(G_sum / ((unsigned long long)RealHeight * RealWidth)),
+			std::floor(B_sum / ((unsigned long long)RealHeight * RealWidth)));
 	}
 	static void TransformToBlackAndWhiteForm(const unsigned char* data, size_t RealHeight, size_t RealWidth)
 	{
@@ -138,68 +139,65 @@ public:
 		{
 			auto AtArray = [&array](int offset_x, int offset_y)->Pixel& {return array[offset_y][offset_x]; };
 
-
-			for (size_t offset_y = 0; offset_y <= minusHeight; ++offset_y)
-				for (size_t offset_x = 0; offset_x <= minusWidth; ++offset_x)
+			auto i = AtArray(2,2);
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
+				for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
+				{
 					AtThis(offset_x, offset_y) = AtArray(offset_x, offset_y);
-			//for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
-			//	for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
-			//	{
-			//		AtThis(offset_x, offset_y) = AtArray(offset_x, offset_y);
-			//		/*AtThis(offset_x,offset_y).R = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).R + AtArray(offset_x, offset_y - 1).R + AtArray(offset_x + 1, offset_y - 1).R
-			//			+ AtArray(offset_x - 1, offset_y).R	+ AtArray(offset_x, offset_y).R	+ AtArray(offset_x + 1, offset_y).R	
-			//			+ AtArray(offset_x - 1, offset_y + 1).R	+ AtArray(offset_x, offset_y + 1).R	+ AtArray(offset_x + 1, offset_y + 1).R) / 9;
-			//		AtThis(offset_x, offset_y).G = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).G + AtArray(offset_x, offset_y - 1).G + AtArray(offset_x + 1, offset_y - 1).G
-			//			+ AtArray(offset_x - 1, offset_y).G + AtArray(offset_x, offset_y).G + AtArray(offset_x + 1, offset_y).G
-			//			+ AtArray(offset_x - 1, offset_y + 1).G + AtArray(offset_x, offset_y + 1).G + AtArray(offset_x + 1, offset_y + 1).G) / 9;
-			//		AtThis(offset_x, offset_y).B = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).B + AtArray(offset_x, offset_y - 1).B + AtArray(offset_x + 1, offset_y - 1).B
-			//			+ AtArray(offset_x - 1, offset_y).B + AtArray(offset_x, offset_y).B + AtArray(offset_x + 1, offset_y).B
-			//			+ AtArray(offset_x - 1, offset_y + 1).B + AtArray(offset_x, offset_y + 1).B + AtArray(offset_x + 1, offset_y + 1).B) / 9;*/
-			//	}
-			//for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
-			//{
-			//	AtThis(0, offset_y) = AtArray(0, offset_y);
-			//	AtThis(minusWidth, offset_y) = AtArray(minusWidth, offset_y);
-			//	/*AtThis(0, offset_y).R = ((unsigned long long)AtArray(0, offset_y - 1).R + AtArray(0 + 1, offset_y - 1).R
-			//		+ AtArray(0, offset_y).R + AtArray(0 + 1, offset_y).R
-			//		+ AtArray(0, offset_y + 1).R + AtArray(0 + 1, offset_y + 1).R) / 6;
-			//	AtThis(0, offset_y).G = ((unsigned long long)AtArray(0, offset_y - 1).G + AtArray(0 + 1, offset_y - 1).G
-			//		+ AtArray(0, offset_y).G + AtArray(0 + 1, offset_y).G
-			//		+ AtArray(0, offset_y + 1).G + AtArray(0 + 1, offset_y + 1).G) / 6;
-			//	AtThis(0, offset_y).B = ((unsigned long long)AtArray(0, offset_y - 1).B + AtArray(0 + 1, offset_y - 1).B
-			//		+ AtArray(0, offset_y).B + AtArray(0 + 1, offset_y).B
-			//		+ AtArray(0, offset_y + 1).B + AtArray(0 + 1, offset_y + 1).B) / 6;
-			//	AtThis(minusWidth, offset_y).R = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).R + AtArray(minusWidth, offset_y - 1).R
-			//		+ AtArray(minusWidth - 1, offset_y).R + AtArray(minusWidth, offset_y).R
-			//		+ AtArray(minusWidth - 1, offset_y + 1).R + AtArray(minusWidth, offset_y + 1).R) / 6;
-			//	AtThis(minusWidth, offset_y).G = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).G + AtArray(minusWidth, offset_y - 1).G
-			//		+ AtArray(minusWidth - 1, offset_y).G + AtArray(minusWidth, offset_y).G
-			//		+ AtArray(minusWidth - 1, offset_y + 1).G + AtArray(minusWidth, offset_y + 1).G) / 6;
-			//	AtThis(minusWidth, offset_y).B = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).B + AtArray(minusWidth, offset_y - 1).B
-			//		+ AtArray(minusWidth - 1, offset_y).B + AtArray(minusWidth, offset_y).B
-			//		+ AtArray(minusWidth - 1, offset_y + 1).B + AtArray(minusWidth, offset_y + 1).B) /6;*/
-			//}
-			//for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
-			//{
-			//	AtThis(offset_x, 0) = AtArray(offset_x, 0);
-			//	AtThis(offset_x, minusHeight) = AtArray(offset_x, minusHeight);
-			//	/*AtThis(offset_x, 0).R = ((unsigned long long)AtArray(offset_x - 1, 0).R + AtArray(offset_x, 0).R + AtArray(offset_x + 1, 0).R
-			//		+ AtArray(offset_x - 1, 0 + 1).R + AtArray(offset_x, 0 + 1).R + AtArray(offset_x + 1, 0 + 1).R) / 6;
-			//	AtThis(offset_x, 0).G = ((unsigned long long)AtArray(offset_x - 1, 0).G + AtArray(offset_x, 0).G + AtArray(offset_x + 1, 0).G
-			//		+ AtArray(offset_x - 1, 0 + 1).G + AtArray(offset_x, 0 + 1).G + AtArray(offset_x + 1, 0 + 1).G) / 6;
-			//	AtThis(offset_x, 0).B = ((unsigned long long)AtArray(offset_x - 1, 0).B + AtArray(offset_x, 0).B + AtArray(offset_x + 1, 0).B
-			//		+ AtArray(offset_x - 1, 0 + 1).B + AtArray(offset_x, 0 + 1).B + AtArray(offset_x + 1, 0 + 1).B) / 6;
-			//	AtThis(offset_x, minusHeight).R = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).R + AtArray(offset_x, minusHeight - 1).R + AtArray(offset_x + 1, minusHeight - 1).R
-			//		+ AtArray(offset_x - 1, minusHeight).R + AtArray(offset_x, minusHeight).R + AtArray(offset_x + 1, minusHeight).R) / 6;
-			//	AtThis(offset_x, minusHeight).G = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).G + AtArray(offset_x, minusHeight - 1).G + AtArray(offset_x + 1, minusHeight - 1).G
-			//		+ AtArray(offset_x - 1, minusHeight).G + AtArray(offset_x, minusHeight).G + AtArray(offset_x + 1, minusHeight).G) / 6;
-			//	AtThis(offset_x, minusHeight).B = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).B + AtArray(offset_x, minusHeight - 1).B + AtArray(offset_x + 1, minusHeight - 1).B
-			//		+ AtArray(offset_x - 1, minusHeight).B + AtArray(offset_x, minusHeight).B + AtArray(offset_x + 1, minusHeight).B) / 6;*/
-			//}
-			//AtThis(0, 0) = AtArray(0,0);
-			//AtThis(0, minusHeight) = AtArray(0, minusHeight);
-			//AtThis(minusWidth, 0) = AtArray(minusWidth, 0);
-			//AtThis(minusWidth, minusHeight) = AtArray(minusWidth, minusHeight);
+					/*AtThis(offset_x,offset_y).R = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).R + AtArray(offset_x, offset_y - 1).R + AtArray(offset_x + 1, offset_y - 1).R
+						+ AtArray(offset_x - 1, offset_y).R	+ AtArray(offset_x, offset_y).R	+ AtArray(offset_x + 1, offset_y).R	
+						+ AtArray(offset_x - 1, offset_y + 1).R	+ AtArray(offset_x, offset_y + 1).R	+ AtArray(offset_x + 1, offset_y + 1).R) / 9;
+					AtThis(offset_x, offset_y).G = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).G + AtArray(offset_x, offset_y - 1).G + AtArray(offset_x + 1, offset_y - 1).G
+						+ AtArray(offset_x - 1, offset_y).G + AtArray(offset_x, offset_y).G + AtArray(offset_x + 1, offset_y).G
+						+ AtArray(offset_x - 1, offset_y + 1).G + AtArray(offset_x, offset_y + 1).G + AtArray(offset_x + 1, offset_y + 1).G) / 9;
+					AtThis(offset_x, offset_y).B = ((unsigned long long)AtArray(offset_x - 1, offset_y - 1).B + AtArray(offset_x, offset_y - 1).B + AtArray(offset_x + 1, offset_y - 1).B
+						+ AtArray(offset_x - 1, offset_y).B + AtArray(offset_x, offset_y).B + AtArray(offset_x + 1, offset_y).B
+						+ AtArray(offset_x - 1, offset_y + 1).B + AtArray(offset_x, offset_y + 1).B + AtArray(offset_x + 1, offset_y + 1).B) / 9;*/
+				}
+			for (size_t offset_y = 1; offset_y < minusHeight - 1; ++offset_y)
+			{
+				AtThis(0, offset_y) = AtArray(0, offset_y);
+				AtThis(minusWidth, offset_y) = AtArray(minusWidth, offset_y);
+				/*AtThis(0, offset_y).R = ((unsigned long long)AtArray(0, offset_y - 1).R + AtArray(0 + 1, offset_y - 1).R
+					+ AtArray(0, offset_y).R + AtArray(0 + 1, offset_y).R
+					+ AtArray(0, offset_y + 1).R + AtArray(0 + 1, offset_y + 1).R) / 6;
+				AtThis(0, offset_y).G = ((unsigned long long)AtArray(0, offset_y - 1).G + AtArray(0 + 1, offset_y - 1).G
+					+ AtArray(0, offset_y).G + AtArray(0 + 1, offset_y).G
+					+ AtArray(0, offset_y + 1).G + AtArray(0 + 1, offset_y + 1).G) / 6;
+				AtThis(0, offset_y).B = ((unsigned long long)AtArray(0, offset_y - 1).B + AtArray(0 + 1, offset_y - 1).B
+					+ AtArray(0, offset_y).B + AtArray(0 + 1, offset_y).B
+					+ AtArray(0, offset_y + 1).B + AtArray(0 + 1, offset_y + 1).B) / 6;
+				AtThis(minusWidth, offset_y).R = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).R + AtArray(minusWidth, offset_y - 1).R
+					+ AtArray(minusWidth - 1, offset_y).R + AtArray(minusWidth, offset_y).R
+					+ AtArray(minusWidth - 1, offset_y + 1).R + AtArray(minusWidth, offset_y + 1).R) / 6;
+				AtThis(minusWidth, offset_y).G = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).G + AtArray(minusWidth, offset_y - 1).G
+					+ AtArray(minusWidth - 1, offset_y).G + AtArray(minusWidth, offset_y).G
+					+ AtArray(minusWidth - 1, offset_y + 1).G + AtArray(minusWidth, offset_y + 1).G) / 6;
+				AtThis(minusWidth, offset_y).B = ((unsigned long long)AtArray(minusWidth - 1, offset_y - 1).B + AtArray(minusWidth, offset_y - 1).B
+					+ AtArray(minusWidth - 1, offset_y).B + AtArray(minusWidth, offset_y).B
+					+ AtArray(minusWidth - 1, offset_y + 1).B + AtArray(minusWidth, offset_y + 1).B) /6;*/
+			}
+			for (size_t offset_x = 1; offset_x < minusWidth - 1; ++offset_x)
+			{
+				AtThis(offset_x, 0) = AtArray(offset_x, 0);
+				AtThis(offset_x, minusHeight) = AtArray(offset_x, minusHeight);
+				/*AtThis(offset_x, 0).R = ((unsigned long long)AtArray(offset_x - 1, 0).R + AtArray(offset_x, 0).R + AtArray(offset_x + 1, 0).R
+					+ AtArray(offset_x - 1, 0 + 1).R + AtArray(offset_x, 0 + 1).R + AtArray(offset_x + 1, 0 + 1).R) / 6;
+				AtThis(offset_x, 0).G = ((unsigned long long)AtArray(offset_x - 1, 0).G + AtArray(offset_x, 0).G + AtArray(offset_x + 1, 0).G
+					+ AtArray(offset_x - 1, 0 + 1).G + AtArray(offset_x, 0 + 1).G + AtArray(offset_x + 1, 0 + 1).G) / 6;
+				AtThis(offset_x, 0).B = ((unsigned long long)AtArray(offset_x - 1, 0).B + AtArray(offset_x, 0).B + AtArray(offset_x + 1, 0).B
+					+ AtArray(offset_x - 1, 0 + 1).B + AtArray(offset_x, 0 + 1).B + AtArray(offset_x + 1, 0 + 1).B) / 6;
+				AtThis(offset_x, minusHeight).R = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).R + AtArray(offset_x, minusHeight - 1).R + AtArray(offset_x + 1, minusHeight - 1).R
+					+ AtArray(offset_x - 1, minusHeight).R + AtArray(offset_x, minusHeight).R + AtArray(offset_x + 1, minusHeight).R) / 6;
+				AtThis(offset_x, minusHeight).G = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).G + AtArray(offset_x, minusHeight - 1).G + AtArray(offset_x + 1, minusHeight - 1).G
+					+ AtArray(offset_x - 1, minusHeight).G + AtArray(offset_x, minusHeight).G + AtArray(offset_x + 1, minusHeight).G) / 6;
+				AtThis(offset_x, minusHeight).B = ((unsigned long long)AtArray(offset_x - 1, minusHeight - 1).B + AtArray(offset_x, minusHeight - 1).B + AtArray(offset_x + 1, minusHeight - 1).B
+					+ AtArray(offset_x - 1, minusHeight).B + AtArray(offset_x, minusHeight).B + AtArray(offset_x + 1, minusHeight).B) / 6;*/
+			}
+			AtThis(0, 0) = AtArray(0,0);
+			AtThis(0, minusHeight) = AtArray(0, minusHeight);
+			AtThis(minusWidth, 0) = AtArray(minusWidth, 0);
+			AtThis(minusWidth, minusHeight) = AtArray(minusWidth, minusHeight);
 			/*AtThis(0, 0).R = ((unsigned long long)AtArray(0, 0).R + AtArray(0, 1).R
 				+ AtArray(1, 0).R + AtArray(1, 1).R) / 4;
 			AtThis(0, minusHeight).R = ((unsigned long long)AtArray(0, minusHeight).R + AtArray(1, minusHeight).R

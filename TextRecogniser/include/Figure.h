@@ -48,14 +48,12 @@ public:
 		ilBindImage(id);
 
 		ilTexImage(_width, _height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, DataPtr);
-
 		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 1);
+		auto RealWidth = ilGetInteger(IL_IMAGE_WIDTH);
 
-		auto Data = ilGetData();
-
-		Filter::TransformToBlackAndWhiteForm(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
-		if (Filter::isDarkImage(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth))
-			Filter::Negative(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
+		Filter::TransformToBlackAndWhiteForm(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
+		if (Filter::isDarkImage(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth))
+			Filter::Negative(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
 	}
 	Figure(Figure& source)
 		: offset_x(source.offset_x)
@@ -93,7 +91,7 @@ public:
 	}
 	~Figure()
 	{
-		if (id != 0)
+		if(id != 0)
 			ilDeleteImages(1, &id);
 	}
 	inline bool SaveAsImage(std::string FileName) const

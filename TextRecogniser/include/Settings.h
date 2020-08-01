@@ -12,7 +12,7 @@ public:
 	const static double SharpeningLevel;
 	const static ILint SharpeningIterationsCount = 5;
 
-	const static size_t FiltrationLevel = 0;
+	const static size_t FiltrationLevel = 1;
 	const static volume BorderSeparationColorDifference = 25;
 
 	const static bool inverseOverX = false;
