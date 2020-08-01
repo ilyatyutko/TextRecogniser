@@ -25,28 +25,17 @@ public:
 		std::list<std::pair<std::vector<bool>, int>> Images;
 
 		for (auto& file : FileList)
-		{
-			//ImageTransformer picture(file.first);
-			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
-			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
-				std::make_pair(tmp
+				std::make_pair(
+					InputImageCutter::CutImage(file.first).front().GetBlackAndWhiteVector()
 							   , file.second));
-		}
 
-		//there 10 is element, which means impossibility to recognise
-		NeuralNet = Hopfild<int>(Images, 10); 
+		//there -1 is element, which means impossibility to recognise
+		NeuralNet = Hopfild<int>(Images, -1); 
 	}
-	int RecognizeImage(const Figure& BinaryImage) const
+	inline int RecognizeImage(const Figure& BinaryImage) const
 	{
 		return NeuralNet.recognition(BinaryImage.GetBlackAndWhiteVector());
-	}
-	int RecognizeImage(const std::vector<bool>& VectorizedImage) const
-	{
-		if (VectorizedImage.size() != 
-			Settings::ImageRecognitionWidth *  Settings::ImageRecognitionHeight)
-			throw std::exception("input VectorImage has wrong size");
-			return NeuralNet.recognition(VectorizedImage);
 	}
 };
 

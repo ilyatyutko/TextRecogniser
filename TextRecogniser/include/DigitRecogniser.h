@@ -3,37 +3,42 @@
 #include "ImageRecogniser.h"
 #include "Figure.h"
 
-static class DigitRecogniser
+class DigitRecogniser
 {
 public:
-	static int RecogniseDigit(const Figure& Image)
+	DigitRecogniser()
 	{
-		if (!RecognisersAreInitialized)
-			Initialization();
-
-		unsigned char NumberRate[11];
-		NumberRate[0] = NumberRate[1] = NumberRate[2]
-			= NumberRate[3] = NumberRate[4] = NumberRate[5]
-			= NumberRate[6] = NumberRate[7] = NumberRate[8]
-			= NumberRate[9] = 0;
-		for (int i = 0; i < 6; ++i)
-			++NumberRate[Recognisers[i].RecognizeImage(Image)];
-
-		int index = 0;
-		for (int i = 0; i < 10; ++i)
-			if (NumberRate[i] > NumberRate[index])
-				index = i;
-		return index;
+		Initialization();
+	}
+	char RecogniseDigit(const Figure& Image)
+	{
+		for (int i = 0; i < SymbolsCount; ++i)
+			NumberRate[i] = 0;
+		int index = -1;
+		size_t maxRate = 0;
+		for (int i = 0; i < RecognisersCount; ++i)
+		{
+			auto resultOfRecognising = Recognisers[i].RecognizeImage(Image);
+			if (resultOfRecognising != -1)
+			{
+				if(++NumberRate[resultOfRecognising] > maxRate)
+				{
+					index = i;
+					maxRate = NumberRate[i];
+				}
+			}
+		}
+		return GetSymbolOfIndex(index);
 	}
 private:
-	static bool RecognisersAreInitialized;
-	static std::vector<ImageRecogniser> Recognisers;
-	static void Initialization()
+	static constexpr size_t SymbolsCount = 10;
+	static constexpr size_t RecognisersCount = 6;
+
+	unsigned char NumberRate[SymbolsCount];
+	char SymbolIndexTranslation[SymbolsCount];
+	std::vector<ImageRecogniser> Recognisers;
+	void Initialization()
 	{
-		if (RecognisersAreInitialized)
-			return;
-		 
-		RecognisersAreInitialized = true;
 		std::list<std::pair<std::string, int>> a;
 
 		Recognisers.reserve(6);
@@ -78,10 +83,25 @@ private:
 		a.push_back(std::make_pair("SampleImages/7.png", 7));
 		a.push_back(std::make_pair("SampleImages/9.png", 9));
 		Recognisers.push_back(ImageRecogniser(a));
-		return;
+
+		SymbolIndexTranslation[0] = ' ';
+		SymbolIndexTranslation[1] = '1';
+		SymbolIndexTranslation[2] = '2';
+		SymbolIndexTranslation[3] = '3';
+		SymbolIndexTranslation[4] = '4';
+		SymbolIndexTranslation[5] = '5';
+		SymbolIndexTranslation[6] = '6';
+		SymbolIndexTranslation[7] = '7';
+		SymbolIndexTranslation[8] = '8';
+		SymbolIndexTranslation[9] = '9';
+	}
+	inline char GetSymbolOfIndex(const int index) const
+	{
+		if (index == -1)
+			return '\a';
+		else if ((-1 < index) && (index < SymbolsCount))
+				return SymbolIndexTranslation[index];
+		else throw std::exception("undefined index");
 	}
 };
-
-bool DigitRecogniser::RecognisersAreInitialized = false;
-std::vector<ImageRecogniser> DigitRecogniser::Recognisers = std::vector<ImageRecogniser>();
 

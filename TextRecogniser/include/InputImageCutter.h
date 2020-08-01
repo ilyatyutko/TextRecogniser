@@ -160,8 +160,9 @@ private:
 		Point offset(minX, minY);
 		for (auto itr = ToRemember.begin(); itr != ToRemember.end(); ++itr)
 			AtImage(*itr - offset) = AtData(*itr);
-
-		return Figure(SymbolImage_data, width_sym, height_sym, offset_x, offset_y);
+		auto answer = Figure(SymbolImage_data, width_sym, height_sym, offset_x, offset_y);
+		delete[] SymbolImage_data;
+		return answer;
 	}
 public:
 	static std::list<Figure> CutImage(const std::string& FileName)
@@ -180,7 +181,7 @@ public:
 		auto Width  = ilGetInteger(IL_IMAGE_WIDTH);
 		auto Data   = ilGetData();
 
-		for(int i =0; i < Settings::FiltrationLevel; ++i)
+		for(int i = 0; i < Settings::FiltrationLevel; ++i)
 			Filter::AverageFilter(Data
 				, Height
 				, Width);
@@ -202,9 +203,6 @@ public:
 				FlagWereLookedArray[offset_y][offset_x] = false;
 
 
-		
-
-		
 		std::list<Figure> SymbolList;
 		auto AtPosition = [Data, Width](size_t x, size_t y) {return *(reinterpret_cast<Pixel*>(Data) + y * Width + x); };
 		auto LocalCatchFigure = std::bind(InputImageCutter::CatchFigure, Data, FlagWereLookedArray, Height, Width, std::placeholders::_1, std::placeholders::_2);
@@ -212,9 +210,7 @@ public:
 			for (int offset_x = 0; offset_x < Width; ++offset_x)
 				if (FlagWereLookedArray[offset_y][offset_x] == false
 					&& AtPosition(offset_x, offset_y) == Colour::Black)
-				{
-					SymbolList.push_back(LocalCatchFigure(offset_x, offset_y));
-				}
+						SymbolList.push_back(LocalCatchFigure(offset_x, offset_y));
 
 
 		for (int i = 0; i < Height; ++i)

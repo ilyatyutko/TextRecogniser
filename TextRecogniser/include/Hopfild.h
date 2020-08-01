@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+
 #include "Encoder.h"
 
 using namespace boost::numeric::ublas;
@@ -25,20 +26,12 @@ namespace
 			a(i) = sigmaFunc(a(i));
 		return;
 	}
-	inline VectorHash GetHashOfVector(const std::vector<bool>& input)
+	inline std::vector<bool> GetSigmaOfVector(const vector<double>& input)
 	{
-		VectorHash answer = "";
+		std::vector<bool> answer;
 		answer.reserve(input.size());
 		for (auto i = 0; i < input.size(); ++i)
-			answer += (input[i] == true) ? '1' : '0';
-		return answer;
-	}
-	inline VectorHash GetHashOfVector(const vector<double>& input)
-	{
-		VectorHash answer = "";
-		answer.reserve(input.size());
-		for (auto i = 0; i < input.size(); ++i)
-			answer += input[i] == 1 ? '1' : '0';
+			answer.push_back( input[i] > 0? true : false);
 		return answer;
 	}
 }
@@ -55,7 +48,7 @@ private:
 	static const int RecognitionCyclesCount = 10;
 public:
 	Hopfild(const std::list<std::pair<std::vector<bool>, Assigned>>& InputListForRecognition
-		, Assigned inputAnswerIfUncorrect = Assigned())
+		, Assigned inputAnswerIfUncorrect)
 		:matrixSize(InputListForRecognition.begin()->first.size())
 		,answerIfUncorrect(inputAnswerIfUncorrect)
 	{
@@ -64,7 +57,8 @@ public:
 		for (auto& i : InputListForRecognition)
 			listOfRemembered.insert(
 				std::make_pair(
-					StringEncoder::Huffman(GetHashOfVector(i.first))
+					//StringEncoder::Huffman(GetSigmaOfVector(i.first))
+					Encoder::CountEncoding(i.first)
 					,i.second
 				));
 
@@ -116,7 +110,7 @@ private:
 		}
 		if (convertingCounter)
 		{
-			auto iter = listOfRemembered.find(StringEncoder::Huffman(GetHashOfVector(Vector)));
+			auto iter = listOfRemembered.find(Encoder::CountEncoding(GetSigmaOfVector( Vector)));
 			if (iter != listOfRemembered.end())
 				return iter->second;
 			else
