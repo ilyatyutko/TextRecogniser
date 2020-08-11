@@ -462,28 +462,3 @@ public:
 		WriteDecoded(textFileInput, textFileOutput);
 	}
 };
-
-
-
-static class CountingEncoding
-{
-public:
-	std::string Encode(const std::vector<bool>& source)
-	{
-		if (source.size() == 0)
-			return std::string("");
-		unsigned short counter = 0;
-		bool written = false;
-		std::string answer = "";
-
-		std::for_each(source.begin(), source.end(),
-			[&counter, &written, &answer](bool pos) {
-				if (pos == written)
-					++counter;
-				else
-					answer = answer + (char)(counter >> 8) + (char)(counter & 0b11111111);
-			});
-		return answer;
-	}
-
-};

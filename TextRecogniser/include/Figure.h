@@ -48,13 +48,46 @@ public:
 		ilBindImage(id);
 
 		ilTexImage(_width, _height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, DataPtr);
-		delete[] DataPtr;
 		iluScale(Settings::ImageRecognitionWidth, Settings::ImageRecognitionHeight, 1);
-		auto Data = ilGetData();
+		auto RealWidth = ilGetInteger(IL_IMAGE_WIDTH);
 
-		Filter::TransformToBlackAndWhiteForm(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
-		if (Filter::isDarkImage(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth))
-			Filter::Negative(Data, Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
+		Filter::TransformToBlackAndWhiteForm(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
+		if (Filter::isDarkImage(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth))
+			Filter::Negative(reinterpret_cast<unsigned char*> (DataPtr), Settings::ImageRecognitionHeight, Settings::ImageRecognitionWidth);
+	}
+	Figure(Figure& source)
+		: offset_x(source.offset_x)
+		, offset_y(source.offset_y)
+		, RealWidth(source.RealWidth)
+		, RealHeight(source.RealHeight)
+		, id(source.id) {
+		source.id = 0;
+	}
+	Figure(Figure&& source)
+		: offset_x(source.offset_x)
+		, offset_y(source.offset_y)
+		, RealWidth(source.RealWidth)
+		, RealHeight(source.RealHeight)
+		, id(source.id) {
+		source.id = 0;
+	}
+	Figure& operator=(Figure& source)
+	{
+		offset_x = source.offset_x;
+		offset_y = source.offset_y;
+		RealWidth = source.RealWidth;
+		RealHeight = source.RealHeight;
+		id = source.id;
+		source.id = 0;
+	}
+	Figure& operator=(Figure&& source)
+	{
+		offset_x = source.offset_x;
+		offset_y = source.offset_y;
+		RealWidth = source.RealWidth;
+		RealHeight = source.RealHeight;
+		id = source.id;
+		source.id = 0;
 	}
 	~Figure()
 	{
@@ -97,7 +130,7 @@ public:
 
 		return answer;
 	}
-	std::vector<bool> GetBoolVector()const
+	std::vector<bool> GetBlackAndWhiteVector()const
 	{
 		std::vector<bool> answer;
 		answer.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
