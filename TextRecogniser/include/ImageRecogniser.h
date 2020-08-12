@@ -26,7 +26,7 @@ public:
 
 		for (auto& file : FileList)
 		{
-			auto SymbolToLearn = std::get<0>(InputImageCutter::CutImage(file.first)).front();
+			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
 			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
 				std::make_pair(tmp

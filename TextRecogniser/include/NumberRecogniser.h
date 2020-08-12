@@ -8,16 +8,13 @@ static class NumberRecogniser
 public:
 	static std::list<std::string> RecogniseNumbersOnImage(const std::string& FileName)
 	{
-		auto ImageInfo = InputImageCutter::CutImage(FileName);
-		auto Figures = std::get<0>(ImageInfo);
-		auto Width = std::get<1>(ImageInfo);
-		auto Height = std::get<2>(ImageInfo);
+		auto Figures = InputImageCutter::CutImage(FileName);
 
 		std::list<Symbol> Symbols;
 		for (auto itr = Figures.begin(); itr != Figures.end(); ++itr)
 		{
 			auto tmp = Symbol(*itr);
-			if(std::isprint(tmp.ASCII))
+			if(std::isprint(tmp.ASCII) && tmp.height >= Settings::YminSymbolSizeOnImage && tmp.width >=Settings::XminSymbolSizeOnImage)
 				Symbols.push_back(tmp);
 		}
 
@@ -31,14 +28,16 @@ public:
 			Symbols.erase(Symbols.begin());
 
 			std::string line = std::string("") + LineEnd.ASCII;			
-			for (auto itr = Symbols.begin(); itr != Symbols.end(); ++itr)
+			for (auto itr = Symbols.begin(); itr != Symbols.end(); )
 			{
 				if (LineEnd.isPrevTo(*itr))
 				{
 					LineEnd = *itr;
 					line += LineEnd.ASCII;
-					Symbols.erase(itr);
+					itr = Symbols.erase(itr);
 				}
+				else
+					++itr;
 			}
 			NumbersList.push_back(line);
 		}

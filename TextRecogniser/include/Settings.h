@@ -18,6 +18,9 @@ public:
 	const static bool inverseOverX = false;
 	const static bool inverseOverY = true;
 
+	const static size_t XminSymbolSizeOnImage = 15;
+	const static size_t YminSymbolSizeOnImage = 25;
+
 	inline static void ililuINIT()
 	{
 		if (!Settings::ILWasINIT)

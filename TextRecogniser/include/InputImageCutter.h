@@ -161,11 +161,10 @@ private:
 		for (auto itr = ToRemember.begin(); itr != ToRemember.end(); ++itr)
 			AtImage(*itr - offset) = AtData(*itr);
 
-		return Figure(SymbolImage_data, width_sym, height_sym, offset_x, offset_y);
+		return Figure(SymbolImage_data, width_sym, height_sym, minX, minY);
 	}
 public:
-	//list, width, height
-	static std::tuple<std::list<Figure>, int, int> CutImage(const std::string& FileName)
+	static std::list<Figure> CutImage(const std::string& FileName)
 	{
 		Settings::ililuINIT();
 		ILuint ID;
@@ -218,7 +217,7 @@ public:
 			delete[] FlagWereLookedArray[i];
 		delete[] FlagWereLookedArray;
 		ilDeleteImages(1, &ID);
-		return std::make_tuple( SymbolList, Width, Height);
+		return SymbolList;
 	}
 };
 

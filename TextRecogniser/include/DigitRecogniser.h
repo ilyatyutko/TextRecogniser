@@ -17,7 +17,7 @@ public:
 		for (int i = 0; i < 6; ++i)
 		{
 			auto Result = Recognisers[i].RecognizeImage(Image);
-			if(Result >= 0)
+			if(0 <= Result && Result < SymbolsCount)
 				++NumberRate[Result];
 		}
 

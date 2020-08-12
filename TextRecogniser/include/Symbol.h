@@ -43,6 +43,7 @@ public:
 		this->X_offset = source.X_offset;
 		this->Y_offset = source.Y_offset;
 		this->ASCII = source.ASCII;
+		return *this;
 	}
 
 	class Comparer
