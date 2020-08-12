@@ -26,7 +26,6 @@ public:
 
 		for (auto& file : FileList)
 		{
-			//ImageTransformer picture(file.first);
 			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
 			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
@@ -34,8 +33,8 @@ public:
 							   , file.second));
 		}
 
-		//there 10 is element, which means impossibility to recognise
-		NeuralNet = Hopfild<int>(Images, 10); 
+		//there -1 is element, which means impossibility to recognise
+		NeuralNet = Hopfild<int>(Images, -1); 
 	}
 	int RecognizeImage(const Figure& BinaryImage) const
 	{
