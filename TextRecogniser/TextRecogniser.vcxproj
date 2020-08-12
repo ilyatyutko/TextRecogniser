@@ -162,6 +162,7 @@
     <ClInclude Include="include\Pixel.h" />
     <ClInclude Include="include\Point.h" />
     <ClInclude Include="include\Settings.h" />
+    <ClInclude Include="include\Symbol.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="GoodRecognising.txt" />

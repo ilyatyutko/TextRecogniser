@@ -4,13 +4,14 @@
 #include <IL/ilu.h>
 #include <iostream>
 #include <functional>
+#include <memory>
 #include "Pixel.h"
 #include "Settings.h"
 #include "Filter.h"
 class Figure
 {
 private:
-	ILuint id;
+	std::shared_ptr<ILuint> id;
 	std::vector<bool> Get_Binary_Form(Pixel* DataPtr, size_t RealWidth, size_t RealHeight) const
 	{
 		std::vector<bool> result;
@@ -43,9 +44,10 @@ public:
 		, RealWidth(_width)
 		, RealHeight(_height)
 	{
+		id = std::make_shared<ILuint>();
 		Settings::ililuINIT();
-		ilGenImages(1, &id);
-		ilBindImage(id);
+		ilGenImages(1, &(*id));
+		ilBindImage(*id);
 
 		ilTexImage(_width, _height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, DataPtr);
 		delete[] DataPtr;
@@ -56,17 +58,13 @@ public:
 		, offset_y(source.offset_y)
 		, RealWidth(source.RealWidth)
 		, RealHeight(source.RealHeight)
-		, id(source.id) {
-		source.id = 0;
-	}
+		, id(source.id) {}
 	Figure(Figure&& source)
 		: offset_x(source.offset_x)
 		, offset_y(source.offset_y)
 		, RealWidth(source.RealWidth)
 		, RealHeight(source.RealHeight)
-		, id(source.id) {
-		source.id = 0;
-	}
+		, id(source.id) {}
 	Figure& operator=(Figure& source)
 	{
 		offset_x = source.offset_x;
@@ -74,7 +72,6 @@ public:
 		RealWidth = source.RealWidth;
 		RealHeight = source.RealHeight;
 		id = source.id;
-		source.id = 0;
 	}
 	Figure& operator=(Figure&& source)
 	{
@@ -83,26 +80,25 @@ public:
 		RealWidth = source.RealWidth;
 		RealHeight = source.RealHeight;
 		id = source.id;
-		source.id = 0;
 	}
 	~Figure()
 	{
-		if(id != 0)
-			ilDeleteImages(1, &id);
+		if(id.use_count() == 1)
+			ilDeleteImages(1, &(*id));
 	}
 	inline bool SaveAsImage(std::string FileName) const
 	{
 		Settings::ililuINIT();
-		ilBindImage(id);
+		ilBindImage(*id);
 		return ilSave(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(FileName.c_str())));
 	}
 	inline bool SaveAsImage() const
 	{
 		Settings::ililuINIT();
-		ilBindImage(id);
+		ilBindImage(*id);
 
 		std::string FileName = ".png";
-		auto IDtmp = id;
+		auto IDtmp = *id;
 		while (IDtmp)
 		{
 			FileName = (char)(IDtmp % 10 + '0') + FileName;
@@ -115,7 +111,7 @@ public:
 		std::vector<Pixel> answer;
 		answer.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
 
-		ilBindImage(id);
+		ilBindImage(*id);
 		auto THISData = reinterpret_cast<Pixel*>( ilGetData());
 		auto size = Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth;
 		auto At = [THISData](size_t offset)->Pixel&
@@ -131,7 +127,7 @@ public:
 		std::vector<bool> answer;
 		answer.reserve(Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth);
 
-		ilBindImage(id);
+		ilBindImage(*id);
 		auto THISData = reinterpret_cast<Pixel*>(ilGetData());
 		auto size = Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth;
 		auto At = [THISData](size_t offset)->Pixel&
@@ -148,7 +144,7 @@ public:
 	{
 		Settings::ililuINIT();
 
-		ilBindImage(id);
+		ilBindImage(*id);
 		auto THISData = reinterpret_cast<Pixel*>(ilGetData());
 		auto size = Settings::ImageRecognitionHeight * Settings::ImageRecognitionWidth;
 		auto At = [THISData](size_t offset)->Pixel&
@@ -159,7 +155,7 @@ public:
 	}
 	inline void ilBindFigure()const
 	{
-		::ilBindImage(id);
+		::ilBindImage(*id);
 	}
 
 	friend std::ostream& operator<< (std::ostream& out, const Figure& source);
@@ -168,7 +164,7 @@ public:
 std::ostream& operator<< (std::ostream& out, const Figure& source)
 {
 	Settings::ililuINIT();
-	ilBindImage(source.id);
+	ilBindImage(*(source.id));
 	size_t RealWidth = ilGetInteger(IL_IMAGE_WIDTH);
 	size_t RealHeight = ilGetInteger(IL_IMAGE_HEIGHT);
 	ILubyte* data = ilGetData();

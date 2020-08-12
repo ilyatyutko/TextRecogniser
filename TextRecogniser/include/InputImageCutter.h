@@ -164,7 +164,8 @@ private:
 		return Figure(SymbolImage_data, width_sym, height_sym, offset_x, offset_y);
 	}
 public:
-	static std::list<Figure> CutImage(const std::string& FileName)
+	//list, width, height
+	static std::tuple<std::list<Figure>, int, int> CutImage(const std::string& FileName)
 	{
 		Settings::ililuINIT();
 		ILuint ID;
@@ -200,11 +201,7 @@ public:
 		for (int offset_y = 0; offset_y < Height; ++offset_y)
 			for (int offset_x = 0; offset_x < Width; ++offset_x)
 				FlagWereLookedArray[offset_y][offset_x] = false;
-
-
-		
-
-		
+	
 		std::list<Figure> SymbolList;
 		auto AtPosition = [Data, Width](size_t x, size_t y) {return *(reinterpret_cast<Pixel*>(Data) + y * Width + x); };
 		auto LocalCatchFigure = std::bind(InputImageCutter::CatchFigure, Data, FlagWereLookedArray, Height, Width, std::placeholders::_1, std::placeholders::_2);
@@ -221,7 +218,7 @@ public:
 			delete[] FlagWereLookedArray[i];
 		delete[] FlagWereLookedArray;
 		ilDeleteImages(1, &ID);
-		return SymbolList;
+		return std::make_tuple( SymbolList, Width, Height);
 	}
 };
 

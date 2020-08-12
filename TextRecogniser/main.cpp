@@ -11,6 +11,12 @@ int main()
 	//for (auto itr = str.begin(); itr != str.end(); ++itr)
 	//	/*itr->SaveAsImage();*/
 	//	std::cout << DigitRecogniser::RecogniseDigit(*itr);
+
+	auto time = clock();
+	for(int i =0; i < 1000; ++i)
+		for(auto i :NumberRecogniser::RecogniseNumbersOnImage(std::string("SampleImages/RecogniseSample.png")))
+			std::cout << i << std::endl;
+	std::cout << (clock() - time) / 1000;
 	return 0;
 
 

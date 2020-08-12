@@ -26,8 +26,7 @@ public:
 
 		for (auto& file : FileList)
 		{
-			//ImageTransformer picture(file.first);
-			auto SymbolToLearn = InputImageCutter::CutImage(file.first).front();
+			auto SymbolToLearn = std::get<0>(InputImageCutter::CutImage(file.first)).front();
 			auto tmp = SymbolToLearn.GetBlackAndWhiteVector();
 			Images.push_back( 
 				std::make_pair(tmp
@@ -49,4 +48,3 @@ public:
 			return NeuralNet.recognition(VectorizedImage);
 	}
 };
-
