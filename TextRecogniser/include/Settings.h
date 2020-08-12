@@ -10,7 +10,7 @@ public:
 
 	const static double ContrastFilterPower;
 	const static double SharpeningLevel;
-	const static ILint SharpeningIterationsCount = 5;
+	const static ILint SharpeningIterationsCount = 0;
 
 	const static size_t FiltrationLevel = 1;
 	const static volume BorderSeparationColorDifference = 25;
@@ -37,8 +37,8 @@ private:
 
 
 };
-const double Settings::ContrastFilterPower = 5.;
-const double Settings::SharpeningLevel = 700.;
+const double Settings::ContrastFilterPower = 505.;
+const double Settings::SharpeningLevel = 70.;
 bool Settings::ILWasINIT = false;
 
 
