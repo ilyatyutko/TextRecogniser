@@ -14,6 +14,4 @@ public:
 			answer += DigitRecogniser::RecogniseDigit(*itr);
 		return answer;
 	}
-
-
 };
