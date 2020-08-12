@@ -64,7 +64,7 @@ public:
 		for (auto& i : InputListForRecognition)
 			listOfRemembered.insert(
 				std::make_pair(
-					StringEncoder::Huffman(GetHashOfVector(i.first))
+					CountingEncoding::Encode(i.first)
 					,i.second
 				));
 
@@ -116,7 +116,7 @@ private:
 		}
 		if (convertingCounter)
 		{
-			auto iter = listOfRemembered.find(StringEncoder::Huffman(GetHashOfVector(Vector)));
+			auto iter = listOfRemembered.find(CountingEncoding::Encode(Vector));
 			if (iter != listOfRemembered.end())
 				return iter->second;
 			else
