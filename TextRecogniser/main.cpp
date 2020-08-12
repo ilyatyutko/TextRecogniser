@@ -11,22 +11,13 @@ int main()
 	//for (auto itr = str.begin(); itr != str.end(); ++itr)
 	//	/*itr->SaveAsImage();*/
 	//	std::cout << DigitRecogniser::RecogniseDigit(*itr);
-	for (int i = 0; i < 50; ++i)
-		std::cout << NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png")) << std::endl;
-	//std::cout << str;//int qweweqwe = 1;
 
-	/*for (int i = 0; i < 500; ++i)
-	{
-		std::list<std::pair<std::string, int>> a;
-		a.push_back(std::make_pair("SampleImages/3.png", 3));
-		a.push_back(std::make_pair("SampleImages/4.png", 4));
-		a.push_back(std::make_pair("SampleImages/7.png",7));
-		a.push_back(std::make_pair("SampleImages/0.png", 0));
-		auto qww = ImageRecogniser(a);
-		a.clear();
-		ilShutDown();
-	}*/
-	return 0;
+	auto str = NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png"));
+	
+	std::cout << str;//int qweweqwe = 1;
+
+
+
 	/*ILuint id;
 	ilInit();
 	ilGenImages(1, &id);
