@@ -11,11 +11,7 @@ int main()
 	//for (auto itr = str.begin(); itr != str.end(); ++itr)
 	//	/*itr->SaveAsImage();*/
 	//	std::cout << DigitRecogniser::RecogniseDigit(*itr);
-
-	auto str = NumberRecogniser::RecogniseNumber(std::string("SampleImages/RecogniseSample.png"));
-	
-	std::cout << str;//int qweweqwe = 1;
-
+	return 0;
 
 
 	/*ILuint id;

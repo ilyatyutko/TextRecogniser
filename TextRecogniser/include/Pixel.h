@@ -23,6 +23,14 @@ public:
 			T != b.T;
 	}
 
+	inline void SetWhiteWithTransparency()
+	{
+		R = G = B = 255;
+	}
+	inline void SetBlackWithTransparency()
+	{
+		R = G = B = 0;
+	}
 	inline volume brightness() const
 	{
 		return std::round((double)(R + G + B) * T / 256. / 3.);

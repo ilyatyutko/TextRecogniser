@@ -45,9 +45,9 @@ public:
 			for (size_t offset_x = 0; offset_x < RealWidth; ++offset_x)
 			{
 				if (AtThis(offset_x, offset_y).brightness() > AverageBrightness)
-					AtThis(offset_x, offset_y) = Colour::White;
+					AtThis(offset_x, offset_y).SetWhiteWithTransparency();
 				else
-					AtThis(offset_x, offset_y) = Colour::Black;
+					AtThis(offset_x, offset_y).SetBlackWithTransparency();
 			}
 	}
 	static void AverageFilter(const unsigned char* data, const size_t RealHeight, const size_t RealWidth)
