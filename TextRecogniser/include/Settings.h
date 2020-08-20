@@ -35,9 +35,12 @@ public:
 		}
 	}
 
-private:
+//private:
 	static bool ILWasINIT;
 };
 const double Settings::ContrastFilterPower = 5.;
 const double Settings::SharpeningLevel = 700.;
 bool Settings::ILWasINIT = false;
+std::string Settings::learningHolders = "";
+bool Settings::LearningMode = false;
+
