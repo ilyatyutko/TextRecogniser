@@ -13,15 +13,13 @@ int main()
 	//	/*itr->SaveAsImage();*/
 	//	std::cout << DigitRecogniser::RecogniseDigit(*itr);
 
-	//auto time = clock();
-	for(int i =0; i < 1000; ++i)
-		for (auto i : NumberRecogniser::RecogniseNumbersOnImage(std::string("SampleImages/5.png")))
+	auto time = clock();
+	for(int i = 0; i < 1000; ++i)
+		for (auto i : NumberRecogniser::RecogniseNumbersOnImage(std::string("SampleImages/1_avg.png")))
 		{
 			std::cout << i << std::endl;
-			ilShutDown();
-			Settings::ILWasINIT = false;
 		}
-	//std::cout << (clock() - time) / 1000;
+	std::cout << (clock() - time) / 1000;
 	//for (int i = 0; i < 1000; ++i)
 	//LearningMode::PrintLearningTable();
 	
