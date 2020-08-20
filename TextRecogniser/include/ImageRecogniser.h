@@ -33,8 +33,8 @@ public:
 							   , file.second));
 		}
 
-		//there -1 is element, which means impossibility to recognise
-		NeuralNet = Hopfild<int>(Images, -1); 
+		//there 10 is element, which means impossibility to recognise
+		NeuralNet = Hopfild<int>(Images, 10); 
 	}
 	int RecognizeImage(const Figure& BinaryImage) const
 	{

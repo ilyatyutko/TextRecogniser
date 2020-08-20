@@ -155,8 +155,6 @@
     <ClInclude Include="include\Figure.h" />
     <ClInclude Include="include\Filter.h" />
     <ClInclude Include="include\Hopfild.h" />
-    <ClInclude Include="include\IncludingElimination.h" />
-    <ClInclude Include="include\LearningMode.h" />
     <ClInclude Include="include\NumberRecogniser.h" />
     <ClInclude Include="include\ImageRecogniser.h" />
     <ClInclude Include="include\DigitRecogniser.h" />
