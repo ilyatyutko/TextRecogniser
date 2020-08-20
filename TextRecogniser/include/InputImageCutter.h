@@ -180,8 +180,6 @@ public:
 		auto Width  = ilGetInteger(IL_IMAGE_WIDTH);
 		auto Data   = ilGetData();
 
-		iluSharpen(Settings::SharpeningLevel, Settings::SharpeningIterationsCount);
-		iluContrast(Settings::ContrastFilterPower);
 		for(int i =0; i < Settings::FiltrationLevel; ++i)
 			Filter::AverageFilter(Data
 				, Height
@@ -193,8 +191,6 @@ public:
 			iluFlipImage();
 		if (Settings::inverseOverX)
 			iluMirror();
-		ilSave(IL_PNG, reinterpret_cast<wchar_t*>(const_cast<char*>(std::string("full.png").c_str())));
-
 
 		Data = ilGetData();
 		bool** FlagWereLookedArray = new bool* [Height];
