@@ -58,11 +58,11 @@ private:
 	}
 	static void Initialization()
 	{
-		if (RecognisersAreInitialized )
+		if (RecognisersAreInitialized)
 			return;
 		Recognisers.clear();
 		srand(time(0));
-		 
+
 		SymbolTable[0] = '0';
 		SymbolTable[1] = '1';
 		SymbolTable[2] = '2';
@@ -73,63 +73,89 @@ private:
 		SymbolTable[7] = '7';
 		SymbolTable[8] = '8';
 		SymbolTable[9] = '9';
-		
-		if (!Settings::LearningMode)
-		{
-			RecognisersAreInitialized = true;
-			std::list<std::pair<std::string, int>> a;
 
-			Recognisers.reserve(6);
+		RecognisersAreInitialized = true;
+		std::list<std::pair<std::string, int>> a;
 
-			a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
-			a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
-			a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
-			a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
-			Recognisers.push_back(ImageRecogniser(a));
+		Recognisers.reserve(6);
 
-			a.clear();
-			a.push_back(std::make_pair("SampleImages/2.png", GetNumberOfSymbol('2')));
-			a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
-			a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
-			a.push_back(std::make_pair("SampleImages/9.png", GetNumberOfSymbol('9')));
-			Recognisers.push_back(ImageRecogniser(a));
+		a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
+		a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
+		a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
+		a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
+		Recognisers.push_back(ImageRecogniser(a));
 
-			a.clear();
-			a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
-			a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
-			a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
-			a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
-			Recognisers.push_back(ImageRecogniser(a));
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/2.png", GetNumberOfSymbol('2')));
+		a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
+		a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
+		a.push_back(std::make_pair("SampleImages/9.png", GetNumberOfSymbol('9')));
+		Recognisers.push_back(ImageRecogniser(a));
 
-			a.clear();
-			a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
-			a.push_back(std::make_pair("SampleImages/5.png", GetNumberOfSymbol('5')));
-			a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
-			a.push_back(std::make_pair("SampleImages/8.png", GetNumberOfSymbol('8')));
-			Recognisers.push_back(ImageRecogniser(a));
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
+		a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
+		a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
+		a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
+		Recognisers.push_back(ImageRecogniser(a));
 
-			a.clear();
-			a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
-			a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
-			a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
-			a.push_back(std::make_pair("SampleImages/8.png", GetNumberOfSymbol('8')));
-			Recognisers.push_back(ImageRecogniser(a));
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
+		a.push_back(std::make_pair("SampleImages/5.png", GetNumberOfSymbol('5')));
+		a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
+		a.push_back(std::make_pair("SampleImages/8.png", GetNumberOfSymbol('8')));
+		Recognisers.push_back(ImageRecogniser(a));
 
-			a.clear();
-			a.push_back(std::make_pair("SampleImages/2.png", GetNumberOfSymbol('2')));
-			a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
-			a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
-			a.push_back(std::make_pair("SampleImages/9.png", GetNumberOfSymbol('9')));
-			Recognisers.push_back(ImageRecogniser(a));
-		}
-		else if (Settings::LearningMode)
-		{
-			//RecognisersAreInitialized = true;
-			std::list<std::pair<std::string, int>> a;
-			for(int i =0 ; i < Settings::learningHolders.size(); ++i)
-				a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol(Settings::learningHolders[i])));
-			Recognisers.push_back(ImageRecogniser(a));
-		}
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
+		a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
+		a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
+		a.push_back(std::make_pair("SampleImages/8.png", GetNumberOfSymbol('8')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/2.png", GetNumberOfSymbol('2')));
+		a.push_back(std::make_pair("SampleImages/6.png", GetNumberOfSymbol('6')));
+		a.push_back(std::make_pair("SampleImages/7.png", GetNumberOfSymbol('7')));
+		a.push_back(std::make_pair("SampleImages/9.png", GetNumberOfSymbol('9')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
+		a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
+		a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
+		a.push_back(std::make_pair("SampleImages/5.png", GetNumberOfSymbol('5')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/1.png", GetNumberOfSymbol('1')));
+		a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
+		a.push_back(std::make_pair("SampleImages/5.png", GetNumberOfSymbol('5')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/2.png", GetNumberOfSymbol('2')));
+		a.push_back(std::make_pair("SampleImages/4.png", GetNumberOfSymbol('4')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		a.clear();
+		a.push_back(std::make_pair("SampleImages/0.png", GetNumberOfSymbol('0')));
+		a.push_back(std::make_pair("SampleImages/3.png", GetNumberOfSymbol('3')));
+		a.push_back(std::make_pair("SampleImages/5.png", GetNumberOfSymbol('5')));
+		Recognisers.push_back(ImageRecogniser(a));
+
+		return;
+	}
+	public:
+	static void ReLearnOn(std::list<char>source)
+	{
+		if (!RecognisersAreInitialized)
+			Initialization();
+		Recognisers.clear();
+		std::list<std::pair<std::string, int>> a;
+		for (auto i : source)
+			a.push_back(std::make_pair(std::string("SampleImages/") + i + std::string(".png"), GetNumberOfSymbol(i)));
+		Recognisers.push_back(ImageRecogniser(a));
 		return;
 	}
 };
